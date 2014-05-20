@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:solr="http://www.springframework.org/schema/data/solr"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                           http://www.springframework.org/schema/data/solr http://www.springframework.org/schema/data/solr/spring-solr-1.0.xsd
+                           http://www.springframework.org/schema/data/jpa
+                           http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+    <context:annotation-config />
+
+    <tx:annotation-driven/>
+
+    <!--Setup data source using place holder properties-->
+    <bean id="prideDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${prider.jdbc.driver}"/>
+        <property name="url" value="${prider.jdbc.url}"/>
+        <property name="username" value="${prider.jdbc.user}"/>
+        <property name="password" value="${prider.jdbc.password}"/>
+    </bean>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="prideDataSource"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="generateDdl" value="false"/>
+                <property name="database" value="ORACLE"/>
+                <property name="showSql" value="false"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+        </property>
+    </bean>
+
+    <bean id="submissionsDirectory" class="java.io.File">
+        <constructor-arg value="${submissions.directory}"/>
+    </bean>
+
+    <!--<solr:repositories base-package="uk.ac.ebi.pride.proteinindexnindex.search.search.term.repository"/>-->
+    <!--<context:component-scan base-package="uk.ac.ebi.pride.proteinindexnindex.search.search.term.service"/>-->
+    <context:component-scan base-package="uk.ac.ebi.pride.proteinindex.search.tools"/>
+    <jpa:repositories base-package="uk.ac.ebi.pride.prider.repo"/>
+
+    <bean id="solrProteinServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">
+        <constructor-arg name="baseURL" value="${solr.server.protein.core.url}" />
+    </bean>
+
+    <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
+        <constructor-arg name="solrServer" ref="solrProteinServer"/>
+    </bean>
+
+    <bean id="solrProteinIdentificationRepositoryFactory" class="uk.ac.ebi.pride.proteinindex.search.search.repository.SolrProteinIdentificationRepositoryFactory">
+        <constructor-arg ref="solrTemplate"/>
+    </bean>
+
+    <bean id="proteinIdentificationSearchService" class="uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationSearchService">
+        <constructor-arg value="#{ solrProteinIdentificationRepositoryFactory.create() }"/>
+    </bean>
+
+    <bean id="proteinIdentificationIndexService" class="uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationIndexService">
+        <constructor-arg value="#{ solrProteinIdentificationRepositoryFactory.create() }"/>
+    </bean>
+
+    <!-- property files -->
+    <context:property-placeholder location="classpath:props/*.properties" ignore-unresolvable="true"/>
+
+</beans>

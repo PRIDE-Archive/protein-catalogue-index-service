@@ -1,0 +1,33 @@
+<configuration>
+
+    <contextName>protein-indexer</contextName>
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>log/protein_indexer.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%contextName - %msg%n</pattern>
+            <!--<pattern>%contextName %date %level %logger{10} [%file : %line] %msg%n</pattern>         `-->
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%contextName - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--override to INFO level in all pride -->
+    <logger name="uk.ac.ebi.pride.proteinindex.search" level="DEBUG"/>
+    <logger name="org.springframework" level="ERROR"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

@@ -1,0 +1,34 @@
+MTD	mzTab-version	1.0
+MTD	mzTab-mode	Complete
+MTD	mzTab-type	Identification
+MTD	mzTab-ID	32411
+MTD	title	MALDI TOF/TOF analysis of 2D gel A2 Part2 Spot 121
+MTD	description	date of export: Fri Jan 17 07:46:22 GMT 2014
+MTD	instrument[1]-name	[PRIDE, PRIDE:0000131, Instrument model, Ultraflex III MALDI TOF/TOF]
+MTD	instrument[1]-source	[FIX, FIX:0000081, matrix-assisted laser desorption/ionization mass spectrometry, ]
+MTD	instrument[1]-analyzer	[MS, MS:1000287, time-of-flight mass spectrometer, ]
+MTD	instrument[1]-detector	[MS, MS:1000705, ultraflex III TOF/TOF, ]
+MTD	software[1]	[MS, MS:1001456, analysis software, Matrix Science Mascot v2.2.04]
+MTD	contact[1]-name	Helena Safavi-Hemami
+MTD	contact[1]-affiliation	University of Melbourne
+MTD	contact[1]-email	helenasafavi@gmx.de
+MTD	contact[2]-name	Paul Veith
+MTD	contact[2]-affiliation	University of Melbourne
+MTD	contact[2]-email	pdv@unimelb.edu.au
+MTD	uri[1]	http://www.ebi.ac.uk/pride/experiment.do?experimentAccessionNumber=32411
+MTD	ms_run[1]-format	[MS, MS:1000564, PSI mzData file, ]
+MTD	ms_run[1]-location	ftp://ftp.ebi.ac.uk/pub/databases/pride/PRIDE_Exp_Complete_Ac_32411.xml
+MTD	ms_run[1]-id_format	[MS, MS:1000777, spectrum identifier nativeID format, ]
+MTD	sample[1]-species[1]	[NEWT, 6491, Conus geographus (Geography cone) (Nubecula geographus), ]
+MTD	sample[1]-tissue[1]	[BTO, BTO:0001440, venom gland, ]
+MTD	assay[1]-sample_ref	sample[1]
+MTD	assay[1]-ms_run_ref	ms_run[1]
+
+PRH	accession	description	taxid	species	database	database_version	search_engine	best_search_engine_score	search_engine_score_ms_run[1]	num_psms_ms_run[1]	num_peptides_distinct_ms_run[1]	num_peptides_unique_ms_run[1]	ambiguity_members	modifications	protein_coverage
+PRT	seg1-isotig00248_69	null	6491	Conus geographus (Geography cone) (Nubecula geographus)	ENSEMBL	1	[MS, MS:1001207, Mascot, ]	null	[MS, MS:1001171, Mascot:score, 138.88]	3	3	null	seg2-isotig00152_69	null	0.0
+
+PSH	sequence	PSM_ID	accession	unique	database	database_version	search_engine	search_engine_score	modifications	retention_time	charge	exp_mass_to_charge	calc_mass_to_charge	spectra_ref	pre	post	start	end
+PSM	LYGILNHANAPVTR	3	seg1-isotig00248_69	null	ENSEMBL	1	[MS, MS:1001207, Mascot, ]	[PRIDE, PRIDE:0000069, Mascot score, 52.28]	null	null	1	1538.8636	1538.8443099999997	ms_run[1]:spectrum=3	null	null	80	93
+PSM	FLTDRYPISGIFSGK	4	seg1-isotig00248_69	null	ENSEMBL	1	[MS, MS:1001207, Mascot, ]	[PRIDE, PRIDE:0000069, Mascot score, 58.66]	null	null	1	1700.9279	1700.9011499999997	ms_run[1]:spectrum=4	null	null	65	79
+PSM	VHAASTAGPFPDNAVVAR	5	seg1-isotig00248_69	null	ENSEMBL	1	[MS, MS:1001207, Mascot, ]	[PRIDE, PRIDE:0000069, Mascot score, 79.94]	null	null	1	1779.9397	1779.91416	ms_run[1]:spectrum=5	null	null	102	119
+
