@@ -10,7 +10,7 @@
 
     <groupId>uk.ac.ebi.pride</groupId>
     <artifactId>protein-index-search</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3-SNAPSHOT</version>
 	<name>protein-index-search</name>
     <url>http://www.ebi.ac.uk/pride</url>
 
@@ -43,9 +43,9 @@
 	</organization>
 
     <scm>
-        <connection>scm:svn:https://svn.ebi.ac.uk/pride-repo/protein-index/protein-index-search/tags/protein-index-search-0.1.2</connection>
-        <developerConnection>scm:svn:https://svn.ebi.ac.uk/pride-repo/protein-index/protein-index-search/tags/protein-index-search-0.1.2</developerConnection>
-        <url>https://svn.ebi.ac.uk/pride-repo/protein-index/protein-index-search/tags/protein-index-search-0.1.2</url>
+        <connection>scm:svn:https://svn.ebi.ac.uk/pride-repo/protein-index/protein-index-search/trunk</connection>
+        <developerConnection>scm:svn:https://svn.ebi.ac.uk/pride-repo/protein-index/protein-index-search/trunk</developerConnection>
+        <url>https://svn.ebi.ac.uk/pride-repo/protein-index/protein-index-search/trunk</url>
     </scm>
 
     <properties>
