@@ -186,6 +186,18 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
     }
 
     @Test
+    public void testFindByAccessionWildcardAndAssayAccession() throws Exception {
+        addProteinIdentification_1();
+        addProteinIdentification_2();
+
+        ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
+
+        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAccessionAndAssayAccessions(PARTIAL_ACCESSION_WILDCARD,ASSAY_1_ACCESSION);
+
+        assertEquals( 1, proteinIdentifieds.size() );
+    }
+
+    @Test
     public void testFindBySynonym() throws Exception {
         addProteinIdentification_1();
         addProteinIdentification_2();

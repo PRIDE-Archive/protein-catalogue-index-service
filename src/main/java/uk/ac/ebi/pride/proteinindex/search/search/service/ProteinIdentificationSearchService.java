@@ -60,6 +60,9 @@ public class ProteinIdentificationSearchService {
     public List<ProteinIdentified> findByAssayAccessions(String assayAccession) {
         return solrProteinIdentificationRepository.findByAssayAccessions(assayAccession);
     }
+    public List<ProteinIdentified> findByAccessionAndAssayAccessions(String accession, String assayAccession) {
+        return solrProteinIdentificationRepository.findByAccessionAndAssayAccessions(accession.replaceAll("[:\\]\\[]", "_"), assayAccession);
+    }
     public List<ProteinIdentified> findByAssayAccessions(Collection<String> assayAccessions) {
         return solrProteinIdentificationRepository.findByAssayAccessionsIn(assayAccessions);
     }

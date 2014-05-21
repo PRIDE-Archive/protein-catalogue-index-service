@@ -39,6 +39,8 @@ public interface SolrProteinIdentificationRepository extends SolrCrudRepository<
     // Assay accession query methods
     @Query("assay_accessions:?0")
     List<ProteinIdentified> findByAssayAccessions(String assayAccession);
+    @Query("id:?0 AND assay_accessions:?1")
+    List<ProteinIdentified> findByAccessionAndAssayAccessions(String accession, String assayAccession);
     @Query("assay_accessions:(?0)")
     List<ProteinIdentified> findByAssayAccessionsIn(Collection<String> assayAccessions);
 }
