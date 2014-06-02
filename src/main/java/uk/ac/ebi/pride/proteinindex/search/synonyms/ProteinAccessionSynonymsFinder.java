@@ -6,7 +6,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
 import uk.ac.ebi.pride.tools.protein_details_fetcher.util.ProteinAccessionPattern;
-import uk.ac.ebi.pride.prider.dataprovider.identification.ProteinReferenceProvider;
+import uk.ac.ebi.pride.archive.dataprovider.identification.ProteinReferenceProvider;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -3,7 +3,7 @@ package uk.ac.ebi.pride.proteinindex.search.indexers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab.model.MZTabFile;
-import uk.ac.ebi.pride.prider.dataprovider.identification.ProteinReferenceProvider;
+import uk.ac.ebi.pride.archive.dataprovider.identification.ProteinReferenceProvider;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationIndexService;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationSearchService;

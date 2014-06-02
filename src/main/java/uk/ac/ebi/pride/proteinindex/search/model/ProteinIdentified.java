@@ -1,7 +1,7 @@
 package uk.ac.ebi.pride.proteinindex.search.model;
 
 import org.apache.solr.client.solrj.beans.Field;
-import uk.ac.ebi.pride.prider.dataprovider.identification.ProteinReferenceProvider;
+import uk.ac.ebi.pride.archive.dataprovider.identification.ProteinReferenceProvider;
 
 import java.util.List;
 import java.util.Set;
