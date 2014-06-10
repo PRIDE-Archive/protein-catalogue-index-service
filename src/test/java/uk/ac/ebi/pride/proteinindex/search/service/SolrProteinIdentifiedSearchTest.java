@@ -15,6 +15,7 @@ import org.apache.solr.common.params.SolrParams;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.solr.core.SolrTemplate;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentifiedFields;
@@ -151,13 +152,17 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
 
     @Test
     public void testFindByProjectAccession() throws Exception {
-        addProteinIdentification_1();
+        addProteinIdentification_1_2(); // adds a protein to two projects in order to test paging results
         addProteinIdentification_2();
 
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
 
-        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByProjectAccessions(PROJECT_1_ACCESSION);
+        // find all results for that project
+        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByProjectAccessions(PROJECT_2_ACCESSION);
+        assertEquals( 2, proteinIdentifieds.size() );
 
+        // same query, but with paged result
+        proteinIdentifieds = proteinIdentificationSearchService.findByProjectAccessions(PROJECT_2_ACCESSION, new PageRequest(1,1));
         assertEquals( 1, proteinIdentifieds.size() );
     }
 
@@ -175,13 +180,15 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
 
     @Test
     public void testFindByAssayAccession() throws Exception {
-        addProteinIdentification_1();
+        addProteinIdentification_1_2();  // adds a protein to two assays in order to test paging results
         addProteinIdentification_2();
 
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
 
-        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAssayAccessions(ASSAY_1_ACCESSION);
+        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAssayAccessions(ASSAY_2_ACCESSION);
+        assertEquals( 2, proteinIdentifieds.size() );
 
+        proteinIdentifieds = proteinIdentificationSearchService.findByAssayAccessions(ASSAY_2_ACCESSION, new PageRequest(1,1));
         assertEquals( 1, proteinIdentifieds.size() );
     }
 
@@ -215,6 +222,29 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
         proteinIdentified.setSynonyms(new TreeSet<String>(Arrays.asList(PROTEIN_1_ACCESSION_SYNONYM_1)));
         proteinIdentified.setProjectAccessions(new TreeSet<String>(Arrays.asList(PROJECT_1_ACCESSION)));
         proteinIdentified.setAssayAccessions(new TreeSet<String>(Arrays.asList(ASSAY_1_ACCESSION)));
+
+        Set<String> synonyms = new TreeSet<String>();
+        synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_1);
+        synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_2);
+        proteinIdentified.setSynonyms(synonyms);
+
+        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create());
+        proteinIdentificationIndexService.save(proteinIdentified);
+    }
+    private void addProteinIdentification_1_2() {
+        // modified method to associate the protein to two projects and two assays, in order to test paging
+        ProteinIdentified proteinIdentified = new ProteinIdentified();
+        proteinIdentified.setAccession(PROTEIN_1_ACCESSION);
+
+        Set<String> projects = new TreeSet<String>();
+        projects.add(PROJECT_1_ACCESSION);
+        projects.add(PROJECT_2_ACCESSION);
+        proteinIdentified.setProjectAccessions(projects);
+
+        Set<String> assays = new TreeSet<String>();
+        assays.add(ASSAY_1_ACCESSION);
+        assays.add(ASSAY_2_ACCESSION);
+        proteinIdentified.setAssayAccessions(assays);
 
         Set<String> synonyms = new TreeSet<String>();
         synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_1);
