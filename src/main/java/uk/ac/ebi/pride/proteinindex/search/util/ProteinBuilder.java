@@ -126,7 +126,7 @@ public class ProteinBuilder {
                 for (String accession: accessions.subList(processedAccessions, Math.min(accessions.size(),processedAccessions+PROCESSING_ACCESSIONS_STEP))) {
                     accessionListLog = accessionListLog + " <" + accession +">";
                 }
-                logger.info("accession list is: " + accessionListLog);
+                logger.debug("accession list is: " + accessionListLog);
 
                 details.putAll(
                         proteinDetailFetcher.getProteinDetails(
@@ -134,9 +134,9 @@ public class ProteinBuilder {
                         )
                 );
 
-                logger.info("Processed accessions: " + processedAccessions + " of " + accessions.size());
-                logger.info("Next step: " + (processedAccessions+PROCESSING_ACCESSIONS_STEP));
-                logger.info("Got details for up to " + details.size() + " accessions (cumulative)");
+                logger.debug("Processed accessions: " + processedAccessions + " of " + accessions.size());
+                logger.debug("Next step: " + (processedAccessions+PROCESSING_ACCESSIONS_STEP));
+                logger.debug("Got details for up to " + details.size() + " accessions (cumulative)");
 
                 processedAccessions = processedAccessions+PROCESSING_ACCESSIONS_STEP;
             }

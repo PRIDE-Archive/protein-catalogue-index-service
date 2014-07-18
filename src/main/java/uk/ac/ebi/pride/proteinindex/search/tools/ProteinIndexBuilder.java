@@ -80,7 +80,7 @@ public class ProteinIndexBuilder {
 
         ProteinIndexBuilder proteinIndexBuilder = context.getBean(ProteinIndexBuilder.class);
 
-        indexProteinsOld(proteinIndexBuilder, proteinIndexBuilder.solrProteinServer);
+        indexProteins(proteinIndexBuilder);
 
     }
 
@@ -126,21 +126,22 @@ public class ProteinIndexBuilder {
         }
     }
 
-    public static void indexProteins(ProteinIndexBuilder proteinIndexBuilder, SolrServer server) {
+    public static void indexProteins(ProteinIndexBuilder proteinIndexBuilder) {
 
         // get all projects on repository
         Iterable<? extends ProjectProvider> projects = proteinIndexBuilder.projectRepository.findAll();
+        logger.info("There are " + proteinIndexBuilder.projectRepository.count() + " projects in repository");
 
         // reset index
         proteinIndexBuilder.proteinIdentificationIndexService.deleteAll();
-        logger.info("All proteins are now DELETED");
+        logger.info("All proteins are now DELETED (new method)");
 
         // create the indexer
         ProjectProteinIdentificationsIndexer projectProteinIdentificationsIndexer = new ProjectProteinIdentificationsIndexer(proteinIndexBuilder.proteinIdentificationSearchService, proteinIndexBuilder.proteinIdentificationIndexService);
 
         // iterate through project to index protein identifications
         for (ProjectProvider project : projects) {
-
+            logger.info("Indexing proteins for project " + project.getAccession());
 //            String generatedFolderPath = ProteinBuilder.buildGeneratedDirectoryFilePath(
 //                    proteinIndexBuilder.submissionsDirectory.getAbsolutePath(),
 //                    project
@@ -149,11 +150,12 @@ public class ProteinIndexBuilder {
             List<ProjectFile> projectFiles = proteinIndexBuilder.projectFileRepository.findAllByProjectId(project.getId());
 
             for (ProjectFile projectFile : projectFiles) {
+
+//                logger.info("Indexing proteins for project file " + projectFile.getFileName());
                 //To avoid using submitted mztab we need to filter by generated ones first
                 //TODO: This will change when we have the internal file names in the database
                 if (ProjectFileSource.GENERATED.equals(projectFile.getFileSource())) {
-
-                    if (projectFile.getFileName().endsWith(PRIDE_MZ_TAB_FILE_EXTENSION)) {
+                    if (projectFile.getFileName().contains(PRIDE_MZ_TAB_FILE_EXTENSION)) {
                         String assayAccession = proteinIndexBuilder.assayRepository.findOne(projectFile.getAssayId()).getAccession();
 
                         String pathToMzTabFile = buildAbsoluteMzTabFilePath(
@@ -162,10 +164,12 @@ public class ProteinIndexBuilder {
                                 projectFile.getFileName()
                         );
 
+                        logger.debug("Trying to open MzTab file " + pathToMzTabFile);
                         MZTabFileParser mzTabFileParser = null;
                         try {
                             mzTabFileParser = new MZTabFileParser(new File(pathToMzTabFile), errorLogOutputStream);
                             MZTabFile mzTabFile = mzTabFileParser.getMZTabFile();
+                            logger.debug("Trying to index from MzTab file " + mzTabFile);
                             projectProteinIdentificationsIndexer.indexAllProteinIdentificationsForProjectAndAssay(project.getAccession(), assayAccession, mzTabFile);
                         } catch (IOException e) {
                             logger.error("Could not open MzTab file: " + pathToMzTabFile);
@@ -179,12 +183,13 @@ public class ProteinIndexBuilder {
     @Deprecated
     public static void indexProteinsOld(ProteinIndexBuilder proteinIndexBuilder, SolrServer server) {
 
+        logger.info("Server URL is : " + server.toString());
         // get all projects on repository
         Iterable<? extends ProjectProvider> projects = proteinIndexBuilder.projectRepository.findAll();
 
         // reset index
         proteinIndexBuilder.proteinIdentificationIndexService.deleteAll();
-        logger.info("All proteins are now DELETED");
+        logger.info("All proteins are now DELETED in server " + server);
 
         // create the indexer
         ProjectProteinIdentificationsIndexer projectProteinIdentificationsIndexer = new ProjectProteinIdentificationsIndexer(proteinIndexBuilder.proteinIdentificationSearchService, proteinIndexBuilder.proteinIdentificationIndexService);

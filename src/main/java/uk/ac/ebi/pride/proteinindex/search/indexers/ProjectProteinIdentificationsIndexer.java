@@ -186,6 +186,7 @@ public class ProjectProteinIdentificationsIndexer {
         Set<String> synonymsToFind = new TreeSet<String>();
 
         for (ProteinIdentified proteinIdentified : proteinsIdentified) {
+            logger.debug("Trying to index protein " + proteinIdentified.getAccession());
             try {
                 // check for existing protein - WE NEED TO REPLACE ':' characters IF ANY
                 List<ProteinIdentified> proteinIdentificationsFromIndex =
@@ -252,7 +253,7 @@ public class ProjectProteinIdentificationsIndexer {
         addSynonymsToIdentifiedProteins(proteinIdentificationsToIndex,proteinReferencesWitSynonyms);
 
         long endTime2 = System.currentTimeMillis();
-        logger.info("DONE getting all synonyms for assay " + assayAccession + " in project " + projectAccession + " in " + (double)(endTime2-startTime2)/1000.0 + " seconds");
+        logger.debug("DONE getting all synonyms for assay " + assayAccession + " in project " + projectAccession + " in " + (double)(endTime2-startTime2)/1000.0 + " seconds");
 
         // save all assay identifications
         startTime2 = System.currentTimeMillis();
