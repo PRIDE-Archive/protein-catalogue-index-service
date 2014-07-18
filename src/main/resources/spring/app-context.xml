@@ -51,7 +51,7 @@
     <!--<solr:repositories base-package="uk.ac.ebi.pride.proteinindexnindex.search.search.term.repository"/>-->
     <!--<context:component-scan base-package="uk.ac.ebi.pride.proteinindexnindex.search.search.term.service"/>-->
     <context:component-scan base-package="uk.ac.ebi.pride.proteinindex.search.tools"/>
-    <jpa:repositories base-package="uk.ac.ebi.pride.prider.repo"/>
+    <jpa:repositories base-package="uk.ac.ebi.pride.archive.repo"/>
 
     <bean id="solrProteinServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">
         <constructor-arg name="baseURL" value="${solr.server.protein.core.url}" />
