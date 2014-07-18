@@ -10,7 +10,7 @@
         <file>log/protein_indexer.log</file>
         <append>true</append>
         <encoder>
-            <pattern>%contextName %date %level %logger{10} [%file : %line] %msg%n</pattern>         `
+            <pattern>%contextName %date %level %logger{10} [%file : %line] %msg%n</pattern>
         </encoder>
     </appender>
 
