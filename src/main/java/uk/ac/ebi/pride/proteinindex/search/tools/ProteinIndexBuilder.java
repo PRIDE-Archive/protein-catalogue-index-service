@@ -88,43 +88,6 @@ public class ProteinIndexBuilder {
         // TODO
     }
 
-    public static void addSynonymsToExistingProteins(ProteinIndexBuilder proteinIndexBuilder, SolrServer server) {
-        List<ProteinIdentified> proteins = proteinIndexBuilder.proteinIdentificationSearchService.findAll();
-
-        if (proteins != null) {
-            // get the accessions
-            Set<String> accessions = new TreeSet<String>();
-            for (ProteinIdentified protein: proteins) {
-                accessions.add(protein.getAccession());
-            }
-
-            try {
-                // get the synonyms
-                Map<String, TreeSet<String>> synonyms = ProteinAccessionSynonymsFinder.findProteinSynonymsForAccession(accessions);
-
-                // set the synonyms (and save)
-                for (ProteinIdentified protein: proteins) {
-                    if (synonyms.containsKey(protein.getAccession())) {
-                        protein.setSynonyms(synonyms.get(protein.getAccession()));
-                        proteinIndexBuilder.proteinIdentificationIndexService.save(protein);
-                    }
-                }
-            } catch (IOException e) {
-                logger.error("Cannot get synonyms");
-                e.printStackTrace();
-            }
-
-        }
-    }
-
-    public static void addDetailsToExistingProteins(ProteinIndexBuilder proteinIndexBuilder, SolrServer server) {
-        List<ProteinIdentified> proteins = proteinIndexBuilder.proteinIdentificationSearchService.findAll();
-
-        if (proteins != null) {
-            // add the details
-            ProteinBuilder.addProteinDetails(proteins);
-        }
-    }
 
     public static void indexProteins(ProteinIndexBuilder proteinIndexBuilder) {
 
