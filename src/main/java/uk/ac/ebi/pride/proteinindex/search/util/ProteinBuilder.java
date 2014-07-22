@@ -135,7 +135,7 @@ public class ProteinBuilder {
                 );
 
                 logger.debug("Processed accessions: " + processedAccessions + " of " + accessions.size());
-                logger.debug("Next step: " + (processedAccessions+PROCESSING_ACCESSIONS_STEP));
+                logger.debug("Next step: " + (processedAccessions + PROCESSING_ACCESSIONS_STEP));
                 logger.debug("Got details for up to " + details.size() + " accessions (cumulative)");
 
                 processedAccessions = processedAccessions+PROCESSING_ACCESSIONS_STEP;
@@ -149,7 +149,7 @@ public class ProteinBuilder {
                         protein.setSequence(details.get(protein.getAccession()).getSequenceString());
                     }
                     if (details.get(protein.getAccession()).getName() != null) {
-                        protein.setDescription(Arrays.asList("NAME####" + details.get(protein.getAccession()).getName()));
+                        protein.setDescription(Arrays.asList(ProteinDetailUtils.NAME + details.get(protein.getAccession()).getName()));
                     }
                 }
             }

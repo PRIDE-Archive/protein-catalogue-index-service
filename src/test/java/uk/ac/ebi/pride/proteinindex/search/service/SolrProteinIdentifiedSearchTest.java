@@ -15,6 +15,7 @@ import org.apache.solr.common.params.SolrParams;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.solr.core.SolrTemplate;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
@@ -22,6 +23,7 @@ import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentifiedFields;
 import uk.ac.ebi.pride.proteinindex.search.search.repository.SolrProteinIdentificationRepositoryFactory;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationIndexService;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationSearchService;
+import uk.ac.ebi.pride.proteinindex.search.util.ProteinDetailUtils;
 
 import java.util.*;
 
@@ -38,6 +40,8 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
     private static final String PROJECT_2_ACCESSION = "PROJECT-2-ACCESSION";
     private static final String ASSAY_1_ACCESSION = "ASSAY-1-ACCESSION";
     private static final String ASSAY_2_ACCESSION = "ASSAY-2-ACCESSION";
+    private static final String PROTEIN_1_NAME = "PROTEIN_1_NAME";
+    private static final String PROTEIN_2_NAME = "PROTEIN_2_NAME";
 
     private SolrServer server;
     private SolrProteinIdentificationRepositoryFactory solrProteinIdentificationRepositoryFactory;
@@ -48,10 +52,9 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
     @BeforeClass
     public static void initialise() throws Exception {
         initCore("src/test/resources/solr/collection1/conf/solrconfig.xml",
-                 "src/test/resources/solr/collection1/conf/schema.xml",
-                 "src/test/resources/solr");
+                "src/test/resources/solr/collection1/conf/schema.xml",
+                "src/test/resources/solr");
     }
-
 
 
     @Before
@@ -77,7 +80,7 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
 
         addProteinIdentification_1();
 
-        SolrParams params = new SolrQuery(ProteinIdentifiedFields.ACCESSION+":"+ PROTEIN_1_ACCESSION);
+        SolrParams params = new SolrQuery(ProteinIdentifiedFields.ACCESSION + ":" + PROTEIN_1_ACCESSION);
         QueryResponse response = server.query(params);
         assertEquals(SINGLE_DOC, response.getResults().getNumFound());
         assertEquals(PROTEIN_1_ACCESSION, response.getResults().get(0).get(ProteinIdentifiedFields.ACCESSION));
@@ -91,9 +94,10 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
         addProteinIdentification_2();
 
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
-        ProteinIdentified proteinIdentified2 = proteinIdentificationSearchService.findByAccession(PROTEIN_1_ACCESSION).get(0);
+        ProteinIdentified proteinIdentified = proteinIdentificationSearchService.findByAccession(PROTEIN_1_ACCESSION).get(0);
 
-        assertEquals(PROTEIN_1_ACCESSION, proteinIdentified2.getAccession());
+        assertEquals(PROTEIN_1_ACCESSION, proteinIdentified.getAccession());
+        assertEquals(PROTEIN_1_NAME, proteinIdentified.getName());
 
     }
 
@@ -104,7 +108,7 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
 
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
 
-        Collection<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findBySynonyms(PROTEIN_1_ACCESSION_SYNONYM_1.replace(':','_'));
+        Collection<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findBySynonyms(PROTEIN_1_ACCESSION_SYNONYM_1.replace(':', '_'));
         assertEquals(2, proteinIdentifieds.size());
 
         proteinIdentifieds = proteinIdentificationSearchService.findBySynonyms(PROTEIN_1_ACCESSION_SYNONYM_2);
@@ -120,7 +124,7 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
 
         List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAccession(PARTIAL_ACCESSION_WILDCARD);
 
-        assertEquals( 2, proteinIdentifieds.size() );
+        assertEquals(2, proteinIdentifieds.size());
 
     }
 
@@ -133,7 +137,7 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
 
         List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAccession(new LinkedList<String>(Arrays.asList(PARTIAL_ACCESSION_WILDCARD_END_1, PARTIAL_ACCESSION_WILDCARD_END_2)));
 
-        assertEquals( 2, proteinIdentifieds.size() );
+        assertEquals(2, proteinIdentifieds.size());
 
     }
 
@@ -146,7 +150,7 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
 
         List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAccession(new LinkedList<String>(Arrays.asList(PARTIAL_ACCESSION_WILDCARD_END_1 + " " + PARTIAL_ACCESSION_WILDCARD_END_2)));
 
-        assertEquals( 2, proteinIdentifieds.size() );
+        assertEquals(2, proteinIdentifieds.size());
 
     }
 
@@ -159,11 +163,11 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
 
         // find all results for that project
         List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByProjectAccessions(PROJECT_2_ACCESSION);
-        assertEquals( 2, proteinIdentifieds.size() );
+        assertEquals(2, proteinIdentifieds.size());
 
         // same query, but with paged result
-        proteinIdentifieds = proteinIdentificationSearchService.findByProjectAccessions(PROJECT_2_ACCESSION, new PageRequest(1,1));
-        assertEquals( 1, proteinIdentifieds.size() );
+        Page<ProteinIdentified> proteinsPage = proteinIdentificationSearchService.findByProjectAccessions(PROJECT_2_ACCESSION, new PageRequest(1, 1));
+        assertEquals(1, proteinsPage.getNumberOfElements());
     }
 
     @Test
@@ -173,9 +177,9 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
 
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
 
-        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAccessionAndProjectAccessions(PARTIAL_ACCESSION_WILDCARD,PROJECT_1_ACCESSION);
+        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAccessionAndProjectAccessions(PARTIAL_ACCESSION_WILDCARD, PROJECT_1_ACCESSION);
 
-        assertEquals( 1, proteinIdentifieds.size() );
+        assertEquals(1, proteinIdentifieds.size());
     }
 
     @Test
@@ -186,10 +190,10 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
 
         List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAssayAccessions(ASSAY_2_ACCESSION);
-        assertEquals( 2, proteinIdentifieds.size() );
+        assertEquals(2, proteinIdentifieds.size());
 
-        proteinIdentifieds = proteinIdentificationSearchService.findByAssayAccessions(ASSAY_2_ACCESSION, new PageRequest(1,1));
-        assertEquals( 1, proteinIdentifieds.size() );
+        Page<ProteinIdentified> proteinsPage = proteinIdentificationSearchService.findByAssayAccessions(ASSAY_2_ACCESSION, new PageRequest(1, 1));
+        assertEquals(1, proteinsPage.getNumberOfElements());
     }
 
     @Test
@@ -199,9 +203,9 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
 
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
 
-        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAccessionAndAssayAccessions(PARTIAL_ACCESSION_WILDCARD,ASSAY_1_ACCESSION);
+        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAccessionAndAssayAccessions(PARTIAL_ACCESSION_WILDCARD, ASSAY_1_ACCESSION);
 
-        assertEquals( 1, proteinIdentifieds.size() );
+        assertEquals(1, proteinIdentifieds.size());
     }
 
     @Test
@@ -213,7 +217,7 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
 
         List<ProteinIdentified> identifiedProteins = proteinIdentificationSearchService.findBySynonymsAndProjectAccessions(PROTEIN_1_ACCESSION_SYNONYM_1, PROJECT_1_ACCESSION);
 
-        assertEquals( 1, identifiedProteins.size() );
+        assertEquals(1, identifiedProteins.size());
     }
 
     private void addProteinIdentification_1() {
@@ -227,10 +231,12 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
         synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_1);
         synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_2);
         proteinIdentified.setSynonyms(synonyms);
+        proteinIdentified.setDescription(Arrays.asList(ProteinDetailUtils.NAME + PROTEIN_1_NAME));
 
         ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create());
         proteinIdentificationIndexService.save(proteinIdentified);
     }
+
     private void addProteinIdentification_1_2() {
         // modified method to associate the protein to two projects and two assays, in order to test paging
         ProteinIdentified proteinIdentified = new ProteinIdentified();
@@ -250,6 +256,7 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
         synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_1);
         synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_2);
         proteinIdentified.setSynonyms(synonyms);
+        proteinIdentified.setDescription(Arrays.asList(ProteinDetailUtils.NAME + PROTEIN_1_NAME));
 
         ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create());
         proteinIdentificationIndexService.save(proteinIdentified);
@@ -265,6 +272,7 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
         Set<String> synonyms = new TreeSet<String>();
         synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_1);
         proteinIdentified.setSynonyms(synonyms);
+        proteinIdentified.setDescription(Arrays.asList(ProteinDetailUtils.NAME + PROTEIN_2_NAME));
 
         ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create());
         proteinIdentificationIndexService.save(proteinIdentified);

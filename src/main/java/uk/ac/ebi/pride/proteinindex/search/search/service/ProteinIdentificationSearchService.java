@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.proteinindex.search.search.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
@@ -49,7 +50,7 @@ public class ProteinIdentificationSearchService {
     public List<ProteinIdentified> findByProjectAccessions(String projectAccession) {
         return solrProteinIdentificationRepository.findByProjectAccessions(projectAccession);
     }
-    public List<ProteinIdentified> findByProjectAccessions(String projectAccession, Pageable pageable) {
+    public Page<ProteinIdentified> findByProjectAccessions(String projectAccession, Pageable pageable) {
         return solrProteinIdentificationRepository.findByProjectAccessions(projectAccession, pageable);
     }
     public List<ProteinIdentified> findByAccessionAndProjectAccessions(String accession, String projectAccession) {
@@ -64,7 +65,7 @@ public class ProteinIdentificationSearchService {
     public List<ProteinIdentified> findByAssayAccessions(String assayAccession) {
         return solrProteinIdentificationRepository.findByAssayAccessions(assayAccession);
     }
-    public List<ProteinIdentified> findByAssayAccessions(String assayAccession, Pageable pageable) {
+    public Page<ProteinIdentified> findByAssayAccessions(String assayAccession, Pageable pageable) {
         return solrProteinIdentificationRepository.findByAssayAccessions(assayAccession, pageable);
     }
     public List<ProteinIdentified> findByAccessionAndAssayAccessions(String accession, String assayAccession) {

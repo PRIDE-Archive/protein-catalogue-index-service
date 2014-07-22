@@ -62,8 +62,7 @@
 
     <properties>
         <archive.repo.version>0.1.17-SNAPSHOT</archive.repo.version>
-        <archive.data.provider.api.version>2.0.1-SNAPSHOT</archive.data.provider.api.version>
-        <solrj.version>4.0.0</solrj.version>
+        <archive.data.provider.api.version>2.0.2-SNAPSHOT</archive.data.provider.api.version>
         <!--<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>-->
     </properties>
 
@@ -183,6 +182,20 @@
 
 	<dependencies>
 
+        <!-- PRIDE Archive repo -->
+        <dependency>
+            <groupId>uk.ac.ebi.pride.archive</groupId>
+            <artifactId>archive-repo</artifactId>
+            <version>${archive.repo.version}</version>
+        </dependency>
+
+        <!--PRIDE Archive data provider-->
+        <dependency>
+            <groupId>uk.ac.ebi.pride.archive</groupId>
+            <artifactId>archive-data-provider-api</artifactId>
+            <version>${archive.data.provider.api.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>uk.ac.ebi.pride.tools</groupId>
             <artifactId>protein-details-fetcher</artifactId>
@@ -204,7 +217,6 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-solr</artifactId>
-            <version>1.2.1.RELEASE</version>
         </dependency>
 
         <!--SolrJ-->
@@ -218,13 +230,6 @@
             <artifactId>solr-test-framework</artifactId>
             <version>${solrj.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <!-- PRIDE-R repo -->
-        <dependency>
-            <groupId>uk.ac.ebi.pride.archive</groupId>
-            <artifactId>archive-repo</artifactId>
-            <version>${archive.repo.version}</version>
         </dependency>
 
         <dependency>
@@ -247,8 +252,8 @@
             <version>2.1.8-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
+                    <groupId>org.apache.log4j</groupId>
+                    <artifactId>com.springsource.org.apache.log4j</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -258,12 +263,6 @@
             <artifactId>oracle-thin</artifactId>
         </dependency>
 
-        <!--Pride R data provider-->
-        <dependency>
-            <groupId>uk.ac.ebi.pride.archive</groupId>
-            <artifactId>archive-data-provider-api</artifactId>
-            <version>2.0.1-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
 
@@ -288,17 +287,6 @@
             <snapshots>
             </snapshots>
         </repository>
-
-        <repository>
-            <id>spring-maven-snapshot</id>
-            <url>http://repo.springsource.org/libs-snapshot</url>
-        </repository>
-
-        <!--<repository>-->
-            <!--<id>springsource-repo</id>-->
-            <!--<name>SpringSource Repository</name>-->
-            <!--<url>http://repo.springsource.org/release</url>-->
-        <!--</repository>-->
 
     </repositories>
 

@@ -1,5 +1,6 @@
 package uk.ac.ebi.pride.proteinindex.search.search.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.solr.repository.Query;
 import org.springframework.data.solr.repository.SolrCrudRepository;
@@ -32,7 +33,7 @@ public interface SolrProteinIdentificationRepository extends SolrCrudRepository<
     @Query("project_accessions:?0")
     List<ProteinIdentified> findByProjectAccessions(String projectAccession);
     @Query("project_accessions:?0")
-    List<ProteinIdentified> findByProjectAccessions(String projectAccession, Pageable pageable);
+    Page<ProteinIdentified> findByProjectAccessions(String projectAccession, Pageable pageable);
     @Query("id:?0 AND project_accessions:?1")
     List<ProteinIdentified> findByAccessionAndProjectAccessions(String accession, String projectAccession);
     @Query("project_accessions:(?0)")
@@ -43,7 +44,7 @@ public interface SolrProteinIdentificationRepository extends SolrCrudRepository<
     @Query("assay_accessions:?0")
     List<ProteinIdentified> findByAssayAccessions(String assayAccession);
     @Query("assay_accessions:?0")
-    List<ProteinIdentified> findByAssayAccessions(String assayAccession, Pageable pageable);
+    Page<ProteinIdentified> findByAssayAccessions(String assayAccession, Pageable pageable);
     @Query("id:?0 AND assay_accessions:?1")
     List<ProteinIdentified> findByAccessionAndAssayAccessions(String accession, String assayAccession);
     @Query("assay_accessions:(?0)")

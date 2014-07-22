@@ -1,7 +1,9 @@
 package uk.ac.ebi.pride.proteinindex.search.model;
 
 import org.apache.solr.client.solrj.beans.Field;
+import uk.ac.ebi.pride.archive.dataprovider.identification.ProteinDetailProvider;
 import uk.ac.ebi.pride.archive.dataprovider.identification.ProteinReferenceProvider;
+import uk.ac.ebi.pride.proteinindex.search.util.ProteinDetailUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -11,7 +13,7 @@ import java.util.Set;
  * @version $Id$
  *
  */
-public class ProteinIdentified implements ProteinReferenceProvider {
+public class ProteinIdentified implements ProteinReferenceProvider,ProteinDetailProvider {
 
     @Field(ProteinIdentifiedFields.ACCESSION)
     private String accession;
@@ -31,6 +33,7 @@ public class ProteinIdentified implements ProteinReferenceProvider {
     @Field(ProteinIdentifiedFields.DESCRIPTION)
     private List<String> description;
 
+    @Override
     public String getAccession() {
         return accession;
     }
@@ -39,8 +42,14 @@ public class ProteinIdentified implements ProteinReferenceProvider {
         this.accession = accession;
     }
 
+    @Override
     public Set<String> getSynonyms() {
         return synonyms;
+    }
+
+    @Override
+    public String getName() {
+        return ProteinDetailUtils.getNameFromDescription(description);
     }
 
     public void setSynonyms(Set<String> synonyms) {
