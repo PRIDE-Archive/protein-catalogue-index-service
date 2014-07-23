@@ -10,7 +10,7 @@
 
     <groupId>uk.ac.ebi.pride</groupId>
     <artifactId>protein-index-search</artifactId>
-    <version>0.1.5-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
 	<name>protein-index-search</name>
     <url>http://www.ebi.ac.uk/pride</url>
 
