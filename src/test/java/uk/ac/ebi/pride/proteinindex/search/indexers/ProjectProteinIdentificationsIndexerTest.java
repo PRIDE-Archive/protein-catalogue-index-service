@@ -91,7 +91,7 @@ public class ProjectProteinIdentificationsIndexerTest extends SolrTestCaseJ4 {
         ProjectProteinIdentificationsIndexer projectProteinIdentificationsIndexer = new ProjectProteinIdentificationsIndexer(proteinIdentificationSearchService,proteinIdentificationIndexService);
 
 
-        MZTabFileParser mzTabFileParser = new MZTabFileParser(new File("src/test/resources/submissions/PXD000433/generated/PRIDE_Exp_Complete_Ac_30824.mztab"), errorLogOutputStream);
+        MZTabFileParser mzTabFileParser = new MZTabFileParser(new File("src/test/resources/submissions/PXD000433/internal/PRIDE_Exp_Complete_Ac_30824.mztab"), errorLogOutputStream);
 
         MZTabFile mzTabFile_30824 = mzTabFileParser.getMZTabFile();
 
@@ -120,7 +120,7 @@ public class ProjectProteinIdentificationsIndexerTest extends SolrTestCaseJ4 {
 
         ProjectProteinIdentificationsIndexer projectProteinIdentificationsIndexer = new ProjectProteinIdentificationsIndexer(proteinIdentificationSearchService,proteinIdentificationIndexService);
 
-        MZTabFileParser mzTabFileParser = new MZTabFileParser(new File("src/test/resources/submissions/PXD000433/generated/PRIDE_Exp_Complete_Ac_30824.mztab"), errorLogOutputStream);
+        MZTabFileParser mzTabFileParser = new MZTabFileParser(new File("src/test/resources/submissions/PXD000433/internal/PRIDE_Exp_Complete_Ac_30824.mztab"), errorLogOutputStream);
 
         MZTabFile mzTabFile_30824 = mzTabFileParser.getMZTabFile();
 
