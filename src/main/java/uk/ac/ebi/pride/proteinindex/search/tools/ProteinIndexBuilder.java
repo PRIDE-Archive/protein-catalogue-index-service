@@ -143,32 +143,32 @@ public class ProteinIndexBuilder {
         }
     }
 
-    @Deprecated
-    public static void indexProteinsOld(ProteinIndexBuilder proteinIndexBuilder, SolrServer server) {
-
-        logger.info("Server URL is : " + server.toString());
-        // get all projects on repository
-        Iterable<? extends ProjectProvider> projects = proteinIndexBuilder.projectRepository.findAll();
-
-        // reset index
-        proteinIndexBuilder.proteinIdentificationIndexService.deleteAll();
-        logger.info("All proteins are now DELETED in server " + server);
-
-        // create the indexer
-        ProjectProteinIdentificationsIndexer projectProteinIdentificationsIndexer = new ProjectProteinIdentificationsIndexer(proteinIndexBuilder.proteinIdentificationSearchService, proteinIndexBuilder.proteinIdentificationIndexService);
-
-        // iterate through project to index protein identifications
-        for (ProjectProvider project : projects) {
-
-            String generatedFolderPath = buildGeneratedDirectoryFilePath(
-                    proteinIndexBuilder.submissionsDirectory.getAbsolutePath(),
-                    project
-            );
-
-            projectProteinIdentificationsIndexer.indexAllProteinIdentifications(project.getAccession(),generatedFolderPath);
-
-        }
-    }
+//    @Deprecated
+//    public static void indexProteinsOld(ProteinIndexBuilder proteinIndexBuilder, SolrServer server) {
+//
+//        logger.info("Server URL is : " + server.toString());
+//        // get all projects on repository
+//        Iterable<? extends ProjectProvider> projects = proteinIndexBuilder.projectRepository.findAll();
+//
+//        // reset index
+//        proteinIndexBuilder.proteinIdentificationIndexService.deleteAll();
+//        logger.info("All proteins are now DELETED in server " + server);
+//
+//        // create the indexer
+//        ProjectProteinIdentificationsIndexer projectProteinIdentificationsIndexer = new ProjectProteinIdentificationsIndexer(proteinIndexBuilder.proteinIdentificationSearchService, proteinIndexBuilder.proteinIdentificationIndexService);
+//
+//        // iterate through project to index protein identifications
+//        for (ProjectProvider project : projects) {
+//
+//            String generatedFolderPath = buildGeneratedDirectoryFilePath(
+//                    proteinIndexBuilder.submissionsDirectory.getAbsolutePath(),
+//                    project
+//            );
+//
+//            projectProteinIdentificationsIndexer.indexAllProteinIdentifications(project.getAccession(),generatedFolderPath);
+//
+//        }
+//    }
 
     //TODO: Move it to a pride-archive-utils
     public static String buildGeneratedDirectoryFilePath(String prefix, ProjectProvider project) {
