@@ -31,50 +31,50 @@ public class ProteinBuilder {
      * @return A map of assay accessions to peptide identifications
      * @throws java.io.IOException
      */
-    @Deprecated
-    public static Map<String, LinkedList<ProteinIdentified>> readProteinIdentificationsFromMzTabFilesDirectory(File mzTabFilesDirectory) throws IOException, MZTabException {
-
-        Map<String, LinkedList<ProteinIdentified>> res =
-                new HashMap<String, LinkedList<ProteinIdentified>>();
-
-        File[] mzTabFilesInDirectory = mzTabFilesDirectory.listFiles(new MzTabFileNameFilter());
-        if (mzTabFilesInDirectory != null) {
-            for (File tabFile: mzTabFilesInDirectory) {
-                MZTabFileParser mzTabFileParser = new MZTabFileParser(tabFile, errorLogOutputStream);
-                if (mzTabFileParser != null) {
-                    // get all the peptide identifications from the file
-                    MZTabFile mzTabFile = mzTabFileParser.getMZTabFile();
-                    if (mzTabFile != null) {
-                        // get assay accession
-                        String assayAccession = tabFile.getName().split("[_\\.]")[4];
-                        // get proteins
-                        LinkedList<ProteinIdentified> assayProteinIdentifieds = new LinkedList<ProteinIdentified>();
-                        Collection<Protein> mzTabProteins = mzTabFile.getProteins();
-                        for (Protein mzTabProtein: mzTabProteins) {
-                            ProteinIdentified proteinIdentified = new ProteinIdentified();
-                            proteinIdentified.setSynonyms(new TreeSet<String>());
-                            proteinIdentified.setProjectAccessions(new TreeSet<String>());
-                            proteinIdentified.setAssayAccessions(new TreeSet<String>());
-                            String correctedAccession = getCorrectedAccession(mzTabProtein.getAccession(), mzTabProtein.getDatabase());
-                            proteinIdentified.setAccession(correctedAccession);
-                            assayProteinIdentifieds.add(proteinIdentified);
-
-                        }
-                        // add protein details
-                        addProteinDetails(assayProteinIdentifieds);
-
-                        // add assay proteins to the result
-                        res.put(assayAccession, assayProteinIdentifieds);
-                        logger.debug("Found " + assayProteinIdentifieds.size() + " protein identifications for Assay " + assayAccession + " in file " + tabFile.getAbsolutePath());
-                    } else {
-                        mzTabFileParser.getErrorList().print(errorLogOutputStream);
-                    }
-                }
-            }
-        }
-
-        return res;
-    }
+//    @Deprecated
+//    public static Map<String, LinkedList<ProteinIdentified>> readProteinIdentificationsFromMzTabFilesDirectory(File mzTabFilesDirectory) throws IOException, MZTabException {
+//
+//        Map<String, LinkedList<ProteinIdentified>> res =
+//                new HashMap<String, LinkedList<ProteinIdentified>>();
+//
+//        File[] mzTabFilesInDirectory = mzTabFilesDirectory.listFiles(new MzTabFileNameFilter());
+//        if (mzTabFilesInDirectory != null) {
+//            for (File tabFile: mzTabFilesInDirectory) {
+//                MZTabFileParser mzTabFileParser = new MZTabFileParser(tabFile, errorLogOutputStream);
+//                if (mzTabFileParser != null) {
+//                    // get all the peptide identifications from the file
+//                    MZTabFile mzTabFile = mzTabFileParser.getMZTabFile();
+//                    if (mzTabFile != null) {
+//                        // get assay accession
+//                        String assayAccession = tabFile.getName().split("[_\\.]")[4];
+//                        // get proteins
+//                        LinkedList<ProteinIdentified> assayProteinIdentifieds = new LinkedList<ProteinIdentified>();
+//                        Collection<Protein> mzTabProteins = mzTabFile.getProteins();
+//                        for (Protein mzTabProtein: mzTabProteins) {
+//                            ProteinIdentified proteinIdentified = new ProteinIdentified();
+//                            proteinIdentified.setSynonyms(new TreeSet<String>());
+//                            proteinIdentified.setProjectAccessions(new TreeSet<String>());
+//                            proteinIdentified.setAssayAccessions(new TreeSet<String>());
+//                            String correctedAccession = getCorrectedAccession(mzTabProtein.getAccession(), mzTabProtein.getDatabase());
+//                            proteinIdentified.setAccession(correctedAccession);
+//                            assayProteinIdentifieds.add(proteinIdentified);
+//
+//                        }
+//                        // add protein details
+//                        addProteinDetails(assayProteinIdentifieds);
+//
+//                        // add assay proteins to the result
+//                        res.put(assayAccession, assayProteinIdentifieds);
+//                        logger.debug("Found " + assayProteinIdentifieds.size() + " protein identifications for Assay " + assayAccession + " in file " + tabFile.getAbsolutePath());
+//                    } else {
+//                        mzTabFileParser.getErrorList().print(errorLogOutputStream);
+//                    }
+//                }
+//            }
+//        }
+//
+//        return res;
+//    }
 
     public static List<ProteinIdentified> readProteinIdentificationsFromMzTabFile(String assayAccession, MZTabFile tabFile) {
 
@@ -93,11 +93,6 @@ public class ProteinBuilder {
                 proteinIdentified.setAccession(correctedAccession);
                 res.add(proteinIdentified);
             }
-
-            // add protein details
-
-            addProteinDetails(res);
-
 
             logger.debug("Found " + res.size() + " protein identifications for Assay " + assayAccession + " in file " + tabFile);
         } else {

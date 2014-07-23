@@ -2,7 +2,9 @@ package uk.ac.ebi.pride.proteinindex.search.indexers;
 
 import uk.ac.ebi.pride.archive.dataprovider.identification.ProteinReferenceProvider;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
+import uk.ac.ebi.pride.proteinindex.search.util.ProteinBuilder;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -11,7 +13,7 @@ import java.util.TreeSet;
  * @author Jose A. Dianes
  * @version $Id$
  */
-public class ProteinAccessionSynonymsIndexer {
+public class ProteinDetailsIndexer {
 
 
 
@@ -24,6 +26,10 @@ public class ProteinAccessionSynonymsIndexer {
                 proteinIdentified.getValue().setSynonyms(synonyms);
             }
         }
+    }
+
+    public static void addDetailsToIdentifiedProteins(List<ProteinIdentified> proteins) {
+        ProteinBuilder.addProteinDetails(proteins);
     }
 
 }
