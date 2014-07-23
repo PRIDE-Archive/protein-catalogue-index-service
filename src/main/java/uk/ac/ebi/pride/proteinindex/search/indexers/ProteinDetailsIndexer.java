@@ -2,6 +2,8 @@ package uk.ac.ebi.pride.proteinindex.search.indexers;
 
 import uk.ac.ebi.pride.archive.dataprovider.identification.ProteinReferenceProvider;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
+import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationIndexService;
+import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationSearchService;
 import uk.ac.ebi.pride.proteinindex.search.util.ProteinBuilder;
 
 import java.util.List;
@@ -14,6 +16,16 @@ import java.util.TreeSet;
  * @version $Id$
  */
 public class ProteinDetailsIndexer {
+
+
+    private ProteinIdentificationSearchService proteinIdentificationSearchService;
+
+    private ProteinIdentificationIndexService proteinIdentificationIndexService;
+
+    public ProteinDetailsIndexer(ProteinIdentificationSearchService proteinIdentificationSearchService, ProteinIdentificationIndexService proteinIdentificationIndexService) {
+        this.proteinIdentificationSearchService = proteinIdentificationSearchService;
+        this.proteinIdentificationIndexService = proteinIdentificationIndexService;
+    }
 
 
 
@@ -30,6 +42,9 @@ public class ProteinDetailsIndexer {
 
     public static void addDetailsToIdentifiedProteins(List<ProteinIdentified> proteins) {
         ProteinBuilder.addProteinDetails(proteins);
+
+        // Index them
+        // TODO
     }
 
 }
