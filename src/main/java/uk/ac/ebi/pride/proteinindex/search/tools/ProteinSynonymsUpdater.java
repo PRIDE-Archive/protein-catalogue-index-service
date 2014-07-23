@@ -24,9 +24,9 @@ import java.util.TreeSet;
  * @version $Id$
  */
 @Component
-public class AccessionSynonymsBuilder {
+public class ProteinSynonymsUpdater {
 
-    private static Logger logger = LoggerFactory.getLogger(AccessionSynonymsBuilder.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(ProteinSynonymsUpdater.class.getName());
 
     @Autowired
     private SolrServer solrProteinServer;
@@ -40,18 +40,14 @@ public class AccessionSynonymsBuilder {
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("spring/app-context.xml");
 
-        AccessionSynonymsBuilder accessionSynonymsBuilder = context.getBean(AccessionSynonymsBuilder.class);
+        ProteinSynonymsUpdater proteinSynonymsUpdater = context.getBean(ProteinSynonymsUpdater.class);
 
-        indexSynonyms(accessionSynonymsBuilder, accessionSynonymsBuilder.solrProteinServer);
-
-    }
-
-    private static void indexSynonyms(AccessionSynonymsBuilder accessionSynonymsBuilder, SolrServer solrProteinServer) {
+        addSynonymsToExistingProteins(proteinSynonymsUpdater, proteinSynonymsUpdater.solrProteinServer);
 
     }
 
-    private static void addSynonymsToExistingProteins(AccessionSynonymsBuilder accessionSynonymsBuilder, SolrServer server) {
-        List<ProteinIdentified> proteins = accessionSynonymsBuilder.proteinIdentificationSearchService.findAll();
+    private static void addSynonymsToExistingProteins(ProteinSynonymsUpdater proteinSynonymsUpdater, SolrServer server) {
+        List<ProteinIdentified> proteins = proteinSynonymsUpdater.proteinIdentificationSearchService.findAll();
 
         if (proteins != null) {
             // get the accessions
@@ -68,7 +64,7 @@ public class AccessionSynonymsBuilder {
                 for (ProteinIdentified protein: proteins) {
                     if (synonyms.containsKey(protein.getAccession())) {
                         protein.setSynonyms(synonyms.get(protein.getAccession()));
-                        accessionSynonymsBuilder.proteinIdentificationIndexService.save(protein);
+                        proteinSynonymsUpdater.proteinIdentificationIndexService.save(protein);
                     }
                 }
             } catch (IOException e) {
@@ -79,13 +75,5 @@ public class AccessionSynonymsBuilder {
         }
     }
 
-    private static void addDetailsToExistingProteins(AccessionSynonymsBuilder accessionSynonymsBuilder, SolrServer server) {
-        List<ProteinIdentified> proteins = accessionSynonymsBuilder.proteinIdentificationSearchService.findAll();
-
-        if (proteins != null) {
-            // add the details
-            ProteinBuilder.addProteinDetails(proteins);
-        }
-    }
 
 }
