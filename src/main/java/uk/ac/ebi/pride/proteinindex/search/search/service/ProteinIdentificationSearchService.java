@@ -100,6 +100,9 @@ public class ProteinIdentificationSearchService {
         return res;
     }
 
+    public Page<ProteinIdentified> findAll(Pageable pageable) {
+        return solrProteinIdentificationRepository.findAll(pageable);
+    }
 
 
 }

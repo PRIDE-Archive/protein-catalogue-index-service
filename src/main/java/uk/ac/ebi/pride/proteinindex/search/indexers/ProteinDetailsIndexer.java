@@ -2,6 +2,8 @@ package uk.ac.ebi.pride.proteinindex.search.indexers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import uk.ac.ebi.pride.archive.dataprovider.identification.ProteinReferenceProvider;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationIndexService;
@@ -23,6 +25,8 @@ public class ProteinDetailsIndexer {
 
     private static Logger logger = LoggerFactory.getLogger(ProteinDetailsIndexer.class.getName());
 
+    private static final int NUM_PROTEINS_PER_PAGE = 1000;
+
     private ProteinIdentificationSearchService proteinIdentificationSearchService;
 
     private ProteinIdentificationIndexService proteinIdentificationIndexService;
@@ -34,9 +38,15 @@ public class ProteinDetailsIndexer {
 
 
     public void addSynonymsToAllExistingProteins() {
-        List<ProteinIdentified> proteins = this.proteinIdentificationSearchService.findAll();
+        int pageNumber = 0;
+        Page<ProteinIdentified> proteinPage =
+                this.proteinIdentificationSearchService.findAll(new PageRequest(pageNumber, NUM_PROTEINS_PER_PAGE));
+        List<ProteinIdentified> proteins = proteinPage.getContent();
 
-        if (proteins != null) {
+        while (proteins != null && proteins.size()>0) {
+
+            // PROCESS PAGE
+            logger.info("Processing " + proteins.size() + " proteins from index page number " + pageNumber);
             // get the accessions
             Set<String> accessions = new TreeSet<String>();
             for (ProteinIdentified protein: proteins) {
@@ -52,12 +62,19 @@ public class ProteinDetailsIndexer {
                     if (synonyms.containsKey(protein.getAccession())) {
                         protein.setSynonyms(synonyms.get(protein.getAccession()));
                         this.proteinIdentificationIndexService.save(protein);
+                        logger.info("Protein " + protein.getAccession() + " updated with " + protein.getSynonyms().size() + " synonyms");
                     }
                 }
             } catch (IOException e) {
                 logger.error("Cannot get synonyms");
                 e.printStackTrace();
             }
+
+            // GO TO NEXT PAGE
+            pageNumber++;
+            proteinPage =
+                    this.proteinIdentificationSearchService.findAll(new PageRequest(pageNumber, NUM_PROTEINS_PER_PAGE));
+            proteins = proteinPage.getContent();
 
         }
     }
