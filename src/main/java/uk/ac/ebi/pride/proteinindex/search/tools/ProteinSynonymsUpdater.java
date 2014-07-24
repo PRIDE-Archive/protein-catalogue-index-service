@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
+import uk.ac.ebi.pride.proteinindex.search.indexers.ProteinDetailsIndexer;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationIndexService;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationSearchService;
@@ -29,9 +30,6 @@ public class ProteinSynonymsUpdater {
     private static Logger logger = LoggerFactory.getLogger(ProteinSynonymsUpdater.class.getName());
 
     @Autowired
-    private SolrServer solrProteinServer;
-
-    @Autowired
     private ProteinIdentificationSearchService proteinIdentificationSearchService;
 
     @Autowired
@@ -42,37 +40,18 @@ public class ProteinSynonymsUpdater {
 
         ProteinSynonymsUpdater proteinSynonymsUpdater = context.getBean(ProteinSynonymsUpdater.class);
 
-        addSynonymsToExistingProteins(proteinSynonymsUpdater, proteinSynonymsUpdater.solrProteinServer);
+        addSynonymsToExistingProteins(proteinSynonymsUpdater);
 
     }
 
-    private static void addSynonymsToExistingProteins(ProteinSynonymsUpdater proteinSynonymsUpdater, SolrServer server) {
-        List<ProteinIdentified> proteins = proteinSynonymsUpdater.proteinIdentificationSearchService.findAll();
+    private static void addSynonymsToExistingProteins(ProteinSynonymsUpdater proteinSynonymsUpdater) {
 
-        if (proteins != null) {
-            // get the accessions
-            Set<String> accessions = new TreeSet<String>();
-            for (ProteinIdentified protein: proteins) {
-                accessions.add(protein.getAccession());
-            }
+        // create the indexer
+        ProteinDetailsIndexer proteinDetailsIndexer = new ProteinDetailsIndexer(proteinSynonymsUpdater.proteinIdentificationSearchService, proteinSynonymsUpdater.proteinIdentificationIndexService);
+        // update all
+        proteinDetailsIndexer.addSynonymsToAllExistingProteins();
 
-            try {
-                // get the synonyms
-                Map<String, TreeSet<String>> synonyms = ProteinAccessionSynonymsFinder.findProteinSynonymsForAccession(accessions);
 
-                // set the synonyms (and save)
-                for (ProteinIdentified protein: proteins) {
-                    if (synonyms.containsKey(protein.getAccession())) {
-                        protein.setSynonyms(synonyms.get(protein.getAccession()));
-                        proteinSynonymsUpdater.proteinIdentificationIndexService.save(protein);
-                    }
-                }
-            } catch (IOException e) {
-                logger.error("Cannot get synonyms");
-                e.printStackTrace();
-            }
-
-        }
     }
 
 

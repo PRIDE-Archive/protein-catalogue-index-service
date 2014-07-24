@@ -88,10 +88,17 @@ public class ProteinBuilder {
                 proteinIdentified.setSynonyms(new TreeSet<String>());
                 proteinIdentified.setProjectAccessions(new TreeSet<String>());
                 proteinIdentified.setAssayAccessions(new TreeSet<String>());
-                // TODO: we must never correct accessions for protein identifications, just for accessions in the Catalog
-                String correctedAccession = getCorrectedAccession(mzTabProtein.getAccession(), mzTabProtein.getDatabase());
-                proteinIdentified.setAccession(correctedAccession);
-                res.add(proteinIdentified);
+                try {
+                    // TODO: we must never correct accessions for protein identifications, just for accessions in the Catalog
+                    String correctedAccession = getCorrectedAccession(mzTabProtein.getAccession(), mzTabProtein.getDatabase());
+                    proteinIdentified.setAccession(correctedAccession);
+                    res.add(proteinIdentified);
+                } catch (Exception e) {
+                    logger.error("Cannot correct protein accession " + mzTabProtein.getAccession() + " with DB " + mzTabProtein.getDatabase());
+                    logger.error("This protein will not be considered any further");
+                    logger.error("Cause:");
+                    e.printStackTrace();
+                }
             }
 
             logger.debug("Found " + res.size() + " protein identifications for Assay " + assayAccession + " in file " + tabFile);
