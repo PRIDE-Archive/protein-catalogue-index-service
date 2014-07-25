@@ -28,20 +28,38 @@ public class ProteinSynonymsUpdater {
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("spring/app-context.xml");
         ProteinSynonymsUpdater proteinSynonymsUpdater = context.getBean(ProteinSynonymsUpdater.class);
-        addSynonymsToExistingProteins(proteinSynonymsUpdater);
+
+        if ("all".equals(args[0])) {
+            addSynonymsToAllExistingProteins(proteinSynonymsUpdater);
+        } else if ("inc".equals(args[0])) {
+            addSynonymsToProteinsWithNoSynonyms(proteinSynonymsUpdater);
+        }
     }
 
-    private static void addSynonymsToExistingProteins(ProteinSynonymsUpdater proteinSynonymsUpdater) {
+    private static void addSynonymsToAllExistingProteins(ProteinSynonymsUpdater proteinSynonymsUpdater) {
         System.out.println("Starting application...");
         // create the indexer
-        System.out.println("Creating protein details indexer...");
+        logger.info("Creating protein details indexer...");
         ProteinDetailsIndexer proteinDetailsIndexer = new ProteinDetailsIndexer(proteinSynonymsUpdater.proteinIdentificationSearchService, proteinSynonymsUpdater.proteinIdentificationIndexService);
-        System.out.println("Protein details indexer created!");
+        logger.info("Protein details indexer created!");
         // update all
-        System.out.println("Starting update process...");
+        logger.info("Starting update process...");
         proteinDetailsIndexer.addSynonymsToAllExistingProteins();
-        System.out.println("Update process completed!");
+        logger.info("Update process completed!");
     }
+
+    private static void addSynonymsToProteinsWithNoSynonyms(ProteinSynonymsUpdater proteinSynonymsUpdater) {
+        System.out.println("Starting application...");
+        // create the indexer
+        logger.info("Creating protein details indexer...");
+        ProteinDetailsIndexer proteinDetailsIndexer = new ProteinDetailsIndexer(proteinSynonymsUpdater.proteinIdentificationSearchService, proteinSynonymsUpdater.proteinIdentificationIndexService);
+        logger.info("Protein details indexer created!");
+        // update all
+        logger.info("Starting update process...");
+        proteinDetailsIndexer.addSynonymsToProteinsWithNoSynonyms();
+        logger.info("Update process completed!");
+    }
+
 
 
 }
