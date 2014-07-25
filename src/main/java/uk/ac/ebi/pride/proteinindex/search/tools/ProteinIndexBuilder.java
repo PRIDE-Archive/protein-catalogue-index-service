@@ -45,16 +45,6 @@ public class ProteinIndexBuilder {
     private static final String INTERNAL_FOLDER_NAME = ProjectFileSource.INTERNAL.getFolderName();
     private static final String GENERATED_FOLDER_NAME = ProjectFileSource.GENERATED.getFolderName();
 
-    /*
-        HttpSolrServer is thread-safe and if you are using the following constructor,
-        you *MUST* re-use the same instance for all requests.  If instances are created on
-        the fly, it can cause a connection leak. The recommended practice is to keep a
-        static instance of HttpSolrServer per solr server url and share it for all requests.
-        See https://issues.apache.org/jira/browse/SOLR-861 for more details
-        */
-    @Autowired
-    private SolrServer solrProteinServer;
-
     @Autowired
     private File submissionsDirectory;
 
@@ -73,31 +63,31 @@ public class ProteinIndexBuilder {
     @Autowired
     private ProteinIdentificationIndexService proteinIdentificationIndexService;
 
-    private final static int STEP = 89;
 
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("spring/app-context.xml");
 
         ProteinIndexBuilder proteinIndexBuilder = context.getBean(ProteinIndexBuilder.class);
 
-        indexProteins(proteinIndexBuilder);
+        if ("index".equals(args[0])) {
+            indexProteins(proteinIndexBuilder);
+        } else if ("delete".equals(args[0])) {
+            deleteAllProteins(proteinIndexBuilder);
+        }
 
     }
 
-    public static void indexNonExistingProteins(ProteinIndexBuilder proteinIndexBuilder, SolrServer server) {
-        // TODO
+    public static void deleteAllProteins(ProteinIndexBuilder proteinIndexBuilder) {
+        // reset index
+        proteinIndexBuilder.proteinIdentificationIndexService.deleteAll();
+        logger.info("All proteins are now DELETED (new method)");
     }
-
 
     public static void indexProteins(ProteinIndexBuilder proteinIndexBuilder) {
 
         // get all projects on repository
         Iterable<? extends ProjectProvider> projects = proteinIndexBuilder.projectRepository.findAll();
         logger.info("There are " + proteinIndexBuilder.projectRepository.count() + " projects in repository");
-
-        // reset index
-        proteinIndexBuilder.proteinIdentificationIndexService.deleteAll();
-        logger.info("All proteins are now DELETED (new method)");
 
         // create the indexer
         ProjectProteinIdentificationsIndexer projectProteinIdentificationsIndexer = new ProjectProteinIdentificationsIndexer(proteinIndexBuilder.proteinIdentificationSearchService, proteinIndexBuilder.proteinIdentificationIndexService);

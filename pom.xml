@@ -270,12 +270,12 @@
             <artifactId>jmztab-modular-util</artifactId>
             <!-- based on mzTab specification version 1.0 RC5-->
             <version>2.1.8-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.log4j</groupId>
-                    <artifactId>com.springsource.org.apache.log4j</artifactId>
-                </exclusion>
-            </exclusions>
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>org.apache.log4j</groupId>-->
+                    <!--<artifactId>com.springsource.org.apache.log4j</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
         </dependency>
 
         <dependency>
