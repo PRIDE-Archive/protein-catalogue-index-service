@@ -1,5 +1,7 @@
 package uk.ac.ebi.pride.proteinindex.search.search.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
 import uk.ac.ebi.pride.proteinindex.search.search.repository.SolrProteinIdentificationRepository;
@@ -10,6 +12,8 @@ import uk.ac.ebi.pride.proteinindex.search.search.repository.SolrProteinIdentifi
  */
 @Service
 public class ProteinIdentificationIndexService {
+
+    private static Logger logger = LoggerFactory.getLogger(ProteinIdentificationIndexService.class.getName());
 
     private SolrProteinIdentificationRepository solrProteinIdentificationRepository;
 
@@ -28,9 +32,16 @@ public class ProteinIdentificationIndexService {
     }
 
     public void save(Iterable<ProteinIdentified> proteinIdentifications) {
-        for (ProteinIdentified proteinIdentified : proteinIdentifications)
+        for (ProteinIdentified proteinIdentified : proteinIdentifications) {
+            logger.info("Protein to SAVE info:");
+            logger.info(proteinIdentified.getAccession());
+            logger.info("With " + proteinIdentified.getProjectAccessions().size() + " project accessions");
+            logger.info("With " + proteinIdentified.getAssayAccessions().size() + " assay accessions");
+
             // fix the accession of needed
             proteinIdentified.getAccession().replaceAll("[:\\]\\[]", "_");
+
+        }
         solrProteinIdentificationRepository.save(proteinIdentifications);
     }
 
