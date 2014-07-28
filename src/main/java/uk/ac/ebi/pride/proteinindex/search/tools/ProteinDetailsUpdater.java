@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
+import uk.ac.ebi.pride.proteinindex.search.indexers.ProteinDetailsIndexer;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationIndexService;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationSearchService;
@@ -29,9 +30,6 @@ public class ProteinDetailsUpdater {
     private static Logger logger = LoggerFactory.getLogger(ProteinDetailsUpdater.class.getName());
 
     @Autowired
-    private SolrServer solrProteinServer;
-
-    @Autowired
     private ProteinIdentificationSearchService proteinIdentificationSearchService;
 
     @Autowired
@@ -42,18 +40,37 @@ public class ProteinDetailsUpdater {
 
         ProteinDetailsUpdater proteinDetailsUpdater = context.getBean(ProteinDetailsUpdater.class);
 
-        addDetailsToExistingProteins(proteinDetailsUpdater, proteinDetailsUpdater.solrProteinServer);
+        if ("all".equals(args[0])) {
+            addDetailsToAllExistingProteins(proteinDetailsUpdater);
+        } else if ("inc".equals(args[0])) {
+            addDetailsToProteinsWithNoDetails(proteinDetailsUpdater);
+        }
+
 
     }
 
+    private static void addDetailsToAllExistingProteins(ProteinDetailsUpdater proteinDetailsUpdater) {
+        System.out.println("Starting application...");
+        // create the indexer
+        logger.info("Creating protein details indexer...");
+        ProteinDetailsIndexer proteinDetailsIndexer = new ProteinDetailsIndexer(proteinDetailsUpdater.proteinIdentificationSearchService, proteinDetailsUpdater.proteinIdentificationIndexService);
+        logger.info("Protein details indexer created!");
+        // update all
+        logger.info("Starting update process...");
+        proteinDetailsIndexer.addDetailsToAllExistingProteins();
+        logger.info("Update process completed!");
+    }
 
-    private static void addDetailsToExistingProteins(ProteinDetailsUpdater proteinDetailsUpdater, SolrServer server) {
-        List<ProteinIdentified> proteins = proteinDetailsUpdater.proteinIdentificationSearchService.findAll();
-
-        if (proteins != null) {
-            // add the details
-            ProteinBuilder.addProteinDetails(proteins);
-        }
+    private static void addDetailsToProteinsWithNoDetails(ProteinDetailsUpdater proteinDetailsUpdater) {
+        System.out.println("Starting application...");
+        // create the indexer
+        logger.info("Creating protein details indexer...");
+        ProteinDetailsIndexer proteinDetailsIndexer = new ProteinDetailsIndexer(proteinDetailsUpdater.proteinIdentificationSearchService, proteinDetailsUpdater.proteinIdentificationIndexService);
+        logger.info("Protein details indexer created!");
+        // update all
+        logger.info("Starting update process...");
+        proteinDetailsIndexer.addDetailsToProteinsWithNoDetails();
+        logger.info("Update process completed!");
     }
 
 }

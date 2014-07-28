@@ -122,22 +122,13 @@ public class ProteinDetailsIndexer {
         }
     }
 
-//    public static void addSynonymsToIdentifiedProteins(Map<String, ProteinIdentified> proteinIdentificationsToIndex, Map<String, ProteinReferenceProvider> proteinReferencesWitSynonyms) {
-//        for (Map.Entry<String, ProteinIdentified> proteinIdentified: proteinIdentificationsToIndex.entrySet()) {
-//            ProteinReferenceProvider proteinReferenceWithSynonyms = proteinReferencesWitSynonyms.get(proteinIdentified.getKey());
-//            if (proteinReferenceWithSynonyms != null) {
-//                Set<String> synonyms = new TreeSet<String>();
-//                synonyms.addAll(proteinReferenceWithSynonyms.getSynonyms());
-//                proteinIdentified.getValue().setSynonyms(synonyms);
-//            }
-//        }
-//    }
 
-    public void addDetailsToIdentifiedProteins(List<ProteinIdentified> proteins) {
-        ProteinBuilder.addProteinDetails(proteins);
+    public void addDetailsToProteinsWithNoDetails() {
 
-        // Index them
-        // TODO
+    }
+
+    public void addDetailsToAllExistingProteins() {
+
     }
 
 }

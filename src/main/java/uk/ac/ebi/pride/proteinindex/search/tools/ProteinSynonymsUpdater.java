@@ -37,7 +37,7 @@ public class ProteinSynonymsUpdater {
     }
 
     private static void addSynonymsToAllExistingProteins(ProteinSynonymsUpdater proteinSynonymsUpdater) {
-        System.out.println("Starting application...");
+        logger.info("Starting application...");
         // create the indexer
         logger.info("Creating protein details indexer...");
         ProteinDetailsIndexer proteinDetailsIndexer = new ProteinDetailsIndexer(proteinSynonymsUpdater.proteinIdentificationSearchService, proteinSynonymsUpdater.proteinIdentificationIndexService);
@@ -49,7 +49,7 @@ public class ProteinSynonymsUpdater {
     }
 
     private static void addSynonymsToProteinsWithNoSynonyms(ProteinSynonymsUpdater proteinSynonymsUpdater) {
-        System.out.println("Starting application...");
+        logger.info("Starting application...");
         // create the indexer
         logger.info("Creating protein details indexer...");
         ProteinDetailsIndexer proteinDetailsIndexer = new ProteinDetailsIndexer(proteinSynonymsUpdater.proteinIdentificationSearchService, proteinSynonymsUpdater.proteinIdentificationIndexService);
