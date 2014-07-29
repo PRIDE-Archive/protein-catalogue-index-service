@@ -95,9 +95,10 @@ public class ProteinBuilder {
                     res.add(proteinIdentified);
                 } catch (Exception e) {
                     logger.error("Cannot correct protein accession " + mzTabProtein.getAccession() + " with DB " + mzTabProtein.getDatabase());
-                    logger.error("This protein will not be considered any further");
-                    logger.error("Cause:");
-                    e.printStackTrace();
+                    logger.error("Original accession will be used");
+                    logger.error("Cause:" + e.getCause());
+                    proteinIdentified.setAccession(mzTabProtein.getAccession());
+                    res.add(proteinIdentified);
                 }
             }
 
@@ -163,11 +164,16 @@ public class ProteinBuilder {
 
     private static String getCorrectedAccession(String accession, String database) {
 
-        AccessionResolver accessionResolver = new AccessionResolver(accession, null, database); // we don't have versions
-        String fixedAccession = accessionResolver.getAccession();
+        try {
+            AccessionResolver accessionResolver = new AccessionResolver(accession, null, database); // we don't have versions
+            String fixedAccession = accessionResolver.getAccession();
 
-        logger.debug("Original accession " + accession + " fixed to " + fixedAccession);
-        return (fixedAccession==null)?accession:fixedAccession;
+            logger.debug("Original accession " + accession + " fixed to " + fixedAccession);
+            return (fixedAccession == null) ? accession : fixedAccession;
+        } catch (Exception e) {
+            logger.error("There were problems getting corrected accession for " + accession +". Original accession will be used.");
+            return accession;
+        }
     }
 
 }
