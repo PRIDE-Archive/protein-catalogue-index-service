@@ -16,7 +16,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%contextName - %msg%n</pattern>
+            <pattern>%contextName [%file : %line] - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -24,7 +24,7 @@
     <logger name="uk.ac.ebi.pride.proteinindex.search" level="INFO"/>
     <logger name="org.springframework" level="ERROR"/>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </root>

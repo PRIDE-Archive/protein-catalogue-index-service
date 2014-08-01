@@ -63,6 +63,7 @@
     <properties>
         <archive.repo.version>0.1.17-SNAPSHOT</archive.repo.version>
         <archive.data.provider.api.version>2.0.3</archive.data.provider.api.version>
+        <jmztab.version>3.0.0</jmztab.version>
     </properties>
 
     <build>
@@ -256,7 +257,7 @@
             <groupId>uk.ac.ebi.pride</groupId>
             <artifactId>jmztab-modular-model</artifactId>
             <!-- based on mzTab specification version 1.0 RC5-->
-            <version>2.1.8-SNAPSHOT</version>
+            <version>${jmztab.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
@@ -269,7 +270,7 @@
             <groupId>uk.ac.ebi.pride</groupId>
             <artifactId>jmztab-modular-util</artifactId>
             <!-- based on mzTab specification version 1.0 RC5-->
-            <version>2.1.8-SNAPSHOT</version>
+            <version>${jmztab.version}</version>
             <!--<exclusions>-->
                 <!--<exclusion>-->
                     <!--<groupId>org.apache.log4j</groupId>-->
