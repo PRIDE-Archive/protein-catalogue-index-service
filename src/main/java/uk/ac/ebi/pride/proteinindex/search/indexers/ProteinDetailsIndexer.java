@@ -41,7 +41,7 @@ public class ProteinDetailsIndexer {
         while (proteins != null && proteins.size()>0) {
 
             // PROCESS PAGE
-            logger.info("Processing " + proteins.size() + " proteins from index page number " + pageNumber);
+            logger.debug("Processing " + proteins.size() + " proteins from index page number " + pageNumber);
             // get the accessions
             Set<String> accessions = new TreeSet<String>();
             for (ProteinIdentified protein: proteins) {
@@ -75,6 +75,39 @@ public class ProteinDetailsIndexer {
 
         }
     }
+
+    public void addSynonymsToProteins(List<ProteinIdentified> proteins) {
+        if (proteins != null && proteins.size()>0) {
+
+            logger.debug("Processing " + proteins.size() + " proteins");
+            // get the accessions
+            Set<String> accessions = new TreeSet<String>();
+            for (ProteinIdentified protein: proteins) {
+                if (protein.getSynonyms()==null || protein.getSynonyms().size()==0) {
+                    accessions.add(protein.getAccession());
+                }
+            }
+
+            try {
+                // get the synonyms
+                Map<String, TreeSet<String>> synonyms = ProteinAccessionSynonymsFinder.findProteinSynonymsForAccession(accessions);
+
+                // set the synonyms (and save)
+                for (ProteinIdentified protein: proteins) {
+                    if (synonyms.containsKey(protein.getAccession())) {
+                        protein.setSynonyms(synonyms.get(protein.getAccession()));
+                        this.proteinIdentificationIndexService.save(protein);
+                        logger.info("Protein " + protein.getAccession() + " updated with " + protein.getSynonyms().size() + " synonyms");
+                    }
+                }
+            } catch (IOException e) {
+                logger.error("Cannot get synonyms");
+                e.printStackTrace();
+            }
+
+        }
+    }
+
 
     public void addSynonymsToAllExistingProteins() {
         int pageNumber = 0;

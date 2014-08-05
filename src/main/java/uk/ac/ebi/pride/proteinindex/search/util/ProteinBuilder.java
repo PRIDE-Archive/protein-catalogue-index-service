@@ -102,7 +102,7 @@ public class ProteinBuilder {
                 }
             }
 
-            logger.debug("Found " + res.size() + " protein identifications for Assay " + assayAccession + " in file " + tabFile);
+            logger.debug("Found " + res.size() + " protein identifications for Assay " + assayAccession + " in file.");
         } else {
             logger.error("Passed null mzTab file to protein identifications reader");
         }
@@ -168,8 +168,13 @@ public class ProteinBuilder {
             AccessionResolver accessionResolver = new AccessionResolver(accession, null, database); // we don't have versions
             String fixedAccession = accessionResolver.getAccession();
 
-            logger.debug("Original accession " + accession + " fixed to " + fixedAccession);
-            return (fixedAccession == null) ? accession : fixedAccession;
+            if (fixedAccession == null || "".equals(fixedAccession)) {
+                logger.debug("No proper fix found for accession " + accession + ". Obtained: <" + fixedAccession +">. Original accession will be used.");
+                return accession;
+            } else {
+                logger.debug("Original accession " + accession + " fixed to " + fixedAccession);
+                return fixedAccession;
+            }
         } catch (Exception e) {
             logger.error("There were problems getting corrected accession for " + accession +". Original accession will be used.");
             return accession;

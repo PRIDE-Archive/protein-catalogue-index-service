@@ -122,7 +122,7 @@ public class ProteinIndexBuilder {
                         try {
                             mzTabFileParser = new MZTabFileParser(new File(pathToMzTabFile), errorLogOutputStream);
                             MZTabFile mzTabFile = mzTabFileParser.getMZTabFile();
-                            logger.debug("Trying to index from MzTab file " + mzTabFile);
+                            logger.debug("Trying to index from MzTab file " + pathToMzTabFile);
                             projectProteinIdentificationsIndexer.indexAllProteinIdentificationsForProjectAndAssay(project.getAccession(), assayAccession, mzTabFile);
                         } catch (IOException e) {
                             logger.error("Could not open MzTab file: " + pathToMzTabFile);
