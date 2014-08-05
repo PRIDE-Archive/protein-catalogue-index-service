@@ -184,9 +184,7 @@ public class ProteinDetailsIndexer {
 
     public void addDetailsToProteins(List<ProteinIdentified> proteins) {
 
-        while (proteins != null && proteins.size()>0) {
-
-            // PROCESS PAGE
+        if (proteins != null && proteins.size()>0) {
             logger.info("Processing " + proteins.size() + " proteins");
             // get the accessions
             List<ProteinIdentified> proteinsToAddDetails = new LinkedList<ProteinIdentified>();
