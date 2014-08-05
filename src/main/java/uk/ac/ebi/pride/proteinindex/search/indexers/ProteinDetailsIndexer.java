@@ -182,6 +182,27 @@ public class ProteinDetailsIndexer {
         }
     }
 
+    public void addDetailsToProteins(List<ProteinIdentified> proteins) {
+
+        while (proteins != null && proteins.size()>0) {
+
+            // PROCESS PAGE
+            logger.info("Processing " + proteins.size() + " proteins");
+            // get the accessions
+            List<ProteinIdentified> proteinsToAddDetails = new LinkedList<ProteinIdentified>();
+            for (ProteinIdentified protein: proteins) {
+                if (protein.getName()==null || protein.getDescription()==null || protein.getDescription().size()==0 || protein.getSequence()==null) {
+                    proteinsToAddDetails.add(protein);
+                }
+            }
+
+            // add the details
+            ProteinBuilder.addProteinDetails(proteinsToAddDetails);
+
+        }
+    }
+
+
     public void addDetailsToAllExistingProteins() {
 
     }
