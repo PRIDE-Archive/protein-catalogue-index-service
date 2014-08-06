@@ -69,10 +69,15 @@ public class ProteinIndexBuilder {
 
         ProteinIndexBuilder proteinIndexBuilder = context.getBean(ProteinIndexBuilder.class);
 
-        if ("index".equals(args[0])) {
-            indexProteins(proteinIndexBuilder);
-        } else if ("delete".equals(args[0])) {
-            deleteAllProteins(proteinIndexBuilder);
+        try {
+            if ("index".equals(args[0])) {
+                indexProteins(proteinIndexBuilder);
+            } else if ("delete".equals(args[0])) {
+                deleteAllProteins(proteinIndexBuilder);
+            }
+        } catch (IndexOutOfBoundsException e) {
+
+            logger.info("Args: index OR delete is mandatory ");
         }
 
     }
