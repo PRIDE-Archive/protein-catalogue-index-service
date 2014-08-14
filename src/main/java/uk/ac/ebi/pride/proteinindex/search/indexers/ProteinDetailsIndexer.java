@@ -103,7 +103,7 @@ public class ProteinDetailsIndexer {
 
             // add the details & save
             ProteinBuilder.addProteinDetails(proteinsToAddDetails);
-            this.proteinIdentificationIndexService.reliableSave(proteinsToAddDetails);
+            this.proteinIdentificationIndexService.save(proteinsToAddDetails);
 
             // GO TO NEXT PAGE
             pageNumber++;
@@ -132,7 +132,7 @@ public class ProteinDetailsIndexer {
 
             // add the details & save
             ProteinBuilder.addProteinDetails(proteinsToAddDetails);
-            this.proteinIdentificationIndexService.reliableSave(proteinsToAddDetails);
+            this.proteinIdentificationIndexService.save(proteinsToAddDetails);
 
         }
     }
@@ -185,7 +185,7 @@ public class ProteinDetailsIndexer {
             // the protein ID is also added as a synonym, facilitating future searches
             protein.getSynonyms().add(protein.getAccession());
             // save
-            this.proteinIdentificationIndexService.reliableSave(protein);
+            this.proteinIdentificationIndexService.save(protein);
             logger.debug("Protein " + protein.getAccession() + " updated with " + protein.getSynonyms().size() + " synonyms");
         }
     }

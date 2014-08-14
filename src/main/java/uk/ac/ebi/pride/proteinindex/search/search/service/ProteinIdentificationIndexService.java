@@ -39,35 +39,13 @@ public class ProteinIdentificationIndexService {
         this.solrProteinIdentificationRepository = solrProteinIdentificationRepository;
     }
 
-    @Deprecated
-    public void save(ProteinIdentified proteinIdentified) {
-        // fix the accession of needed
-        proteinIdentified.getAccession().replaceAll("[:\\]\\[]", "_");
-        this.reliableSave(proteinIdentified);
-    }
-
-    @Deprecated
-    public void save(Iterable<ProteinIdentified> proteinIdentifications) {
-        for (ProteinIdentified proteinIdentified : proteinIdentifications) {
-            logger.debug("Protein to SAVE info:");
-            logger.debug(proteinIdentified.getAccession());
-            logger.debug("With " + proteinIdentified.getProjectAccessions().size() + " project accessions");
-            logger.debug("With " + proteinIdentified.getAssayAccessions().size() + " assay accessions");
-
-            // fix the accession of needed
-            proteinIdentified.getAccession().replaceAll("[:\\]\\[]", "_");
-
-        }
-        solrProteinIdentificationRepository.save(proteinIdentifications);
-    }
-
-    public boolean reliableSave(ProteinIdentified proteinIdentified) {
+    public boolean save(ProteinIdentified proteinIdentified) {
         Collection<ProteinIdentified> pii = new LinkedList<ProteinIdentified>();
         pii.add(proteinIdentified);
-        return reliableSave(pii);
+        return save(pii);
     }
 
-    public boolean reliableSave(Collection<ProteinIdentified> proteinsIdentified) {
+    public boolean save(Collection<ProteinIdentified> proteinsIdentified) {
         if (proteinsIdentified!= null && proteinsIdentified.size()>0) {
             int numTries = 0;
             boolean succeed = false;

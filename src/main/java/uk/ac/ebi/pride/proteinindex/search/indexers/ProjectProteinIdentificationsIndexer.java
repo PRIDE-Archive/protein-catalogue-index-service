@@ -40,7 +40,7 @@ public class ProjectProteinIdentificationsIndexer {
             if (protein.getProjectAccessions().isEmpty() && protein.getAssayAccessions().isEmpty()) {
                 this.proteinIdentificationIndexService.delete(protein.getAccession());
             } else {
-                this.proteinIdentificationIndexService.reliableSave(protein);
+                this.proteinIdentificationIndexService.save(protein);
             }
         }
 
@@ -55,10 +55,9 @@ public class ProjectProteinIdentificationsIndexer {
         for (ProteinIdentified proteinIdentified : proteinsIdentified) {
             logger.debug("Trying to index protein " + proteinIdentified.getAccession());
             try {
-                // check for existing protein - WE NEED TO REPLACE ':' characters IF ANY
                 List<ProteinIdentified> proteinIdentificationsFromIndex =
                         proteinIdentificationSearchService.findByAccession(
-                                proteinIdentified.getAccession().replace(":","_")
+                                proteinIdentified.getAccession()
                         );
 
                 // if the protein is already in the index... update
@@ -117,7 +116,7 @@ public class ProjectProteinIdentificationsIndexer {
 
         // save all assay identifications
         long startTime2 = System.currentTimeMillis();
-        proteinIdentificationIndexService.reliableSave(proteinIdentificationsToIndex.values());
+        proteinIdentificationIndexService.save(proteinIdentificationsToIndex.values());
         long endTime2 = System.currentTimeMillis();
         logger.debug("COMMITTED " + proteinIdentificationsToIndex.size() +
                 " proteins from PROJECT:" + projectAccession +
