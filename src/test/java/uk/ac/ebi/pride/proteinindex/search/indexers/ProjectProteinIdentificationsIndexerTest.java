@@ -81,7 +81,7 @@ public class ProjectProteinIdentificationsIndexerTest extends SolrTestCaseJ4 {
         assertEquals(ZERO_DOCS, response.getResults().getNumFound());
     }
 
-//    @Ignore
+    @Ignore
     @Test
     public void testIndexAllProteinsForProjectAndAssay() throws Exception {
 
@@ -115,7 +115,7 @@ public class ProjectProteinIdentificationsIndexerTest extends SolrTestCaseJ4 {
 
     }
 
-//    @Ignore
+    @Ignore
     @Test
     public void testDeletion() throws Exception {
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
