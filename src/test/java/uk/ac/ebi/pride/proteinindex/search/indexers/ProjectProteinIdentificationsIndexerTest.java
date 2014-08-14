@@ -86,7 +86,7 @@ public class ProjectProteinIdentificationsIndexerTest extends SolrTestCaseJ4 {
     public void testIndexAllProteinsForProjectAndAssay() throws Exception {
 
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
-        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create());
+        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create(), server);
 
         ProjectProteinIdentificationsIndexer projectProteinIdentificationsIndexer = new ProjectProteinIdentificationsIndexer(proteinIdentificationSearchService,proteinIdentificationIndexService);
 
@@ -116,7 +116,7 @@ public class ProjectProteinIdentificationsIndexerTest extends SolrTestCaseJ4 {
     @Test
     public void testDeletion() throws Exception {
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
-        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create());
+        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create(), server);
 
         ProjectProteinIdentificationsIndexer projectProteinIdentificationsIndexer = new ProjectProteinIdentificationsIndexer(proteinIdentificationSearchService,proteinIdentificationIndexService);
 
@@ -164,7 +164,7 @@ public class ProjectProteinIdentificationsIndexerTest extends SolrTestCaseJ4 {
         addD0NNb3();
 
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
-        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create());
+        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create(), server);
 
         List<ProteinIdentified> proteins = proteinIdentificationSearchService.findByAccession(TEST_PROTEIN_ACCESSION);
 
@@ -182,7 +182,7 @@ public class ProjectProteinIdentificationsIndexerTest extends SolrTestCaseJ4 {
 
 
     private void addD0NNb3() {
-        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create());
+        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create(),this.server);
         ProteinIdentified proteinIdentified = new ProteinIdentified();
         proteinIdentified.setAccession(TEST_PROTEIN_ACCESSION);
         proteinIdentified.setProjectAccessions(new TreeSet<String>(Arrays.asList(new String[]{TEST_PROJECT_ACCESSION})));

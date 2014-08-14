@@ -31,7 +31,7 @@ public class IpiMapper {
             mappingsFile = IpiMapper.class.getClassLoader().getResourceAsStream(ipiFilePath);
             mappings = new HashMap<String, TreeSet<String>>();
             buildMappingsFromFile();
-            logger.info("IPI-UniProt mappings file contains " + mappings.size() + " entries");
+            logger.debug("IPI-UniProt mappings file contains " + mappings.size() + " entries");
         } catch (Exception e) {
             logger.error("Cannot create IPI mappings at " + ipiFilePath);
             logger.error("Reason: ");

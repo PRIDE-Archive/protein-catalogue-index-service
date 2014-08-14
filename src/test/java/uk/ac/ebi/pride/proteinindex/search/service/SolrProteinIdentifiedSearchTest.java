@@ -233,7 +233,7 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
         proteinIdentified.setSynonyms(synonyms);
         proteinIdentified.setDescription(Arrays.asList(ProteinDetailUtils.NAME + PROTEIN_1_NAME));
 
-        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create());
+        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create(), server);
         proteinIdentificationIndexService.save(proteinIdentified);
     }
 
@@ -258,7 +258,7 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
         proteinIdentified.setSynonyms(synonyms);
         proteinIdentified.setDescription(Arrays.asList(ProteinDetailUtils.NAME + PROTEIN_1_NAME));
 
-        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create());
+        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create(), server);
         proteinIdentificationIndexService.save(proteinIdentified);
     }
 
@@ -274,7 +274,7 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
         proteinIdentified.setSynonyms(synonyms);
         proteinIdentified.setDescription(Arrays.asList(ProteinDetailUtils.NAME + PROTEIN_2_NAME));
 
-        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create());
+        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create(), server);
         proteinIdentificationIndexService.save(proteinIdentified);
 
     }
