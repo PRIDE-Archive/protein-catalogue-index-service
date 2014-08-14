@@ -184,10 +184,13 @@ public class ProteinDetailsIndexer {
             }
             // the protein ID is also added as a synonym, facilitating future searches
             protein.getSynonyms().add(protein.getAccession());
-            // save
-            this.proteinIdentificationIndexService.save(protein);
             logger.debug("Protein " + protein.getAccession() + " updated with " + protein.getSynonyms().size() + " synonyms");
         }
+
+        // save
+        this.proteinIdentificationIndexService.save(proteins);
+
+
     }
 
 }
