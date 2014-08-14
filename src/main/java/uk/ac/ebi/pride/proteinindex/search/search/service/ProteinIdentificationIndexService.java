@@ -26,7 +26,8 @@ public class ProteinIdentificationIndexService {
     private static final int NUM_TRIES = 10;
     private static final int SECONDS_TO_WAIT = 30;
     private static final long MAX_ELAPSED_TIME_PING_QUERY = 10000;
-    SolrServer proteinCatalogServer;
+
+    private SolrServer proteinCatalogServer;
 
     private SolrProteinIdentificationRepository solrProteinIdentificationRepository;
 
