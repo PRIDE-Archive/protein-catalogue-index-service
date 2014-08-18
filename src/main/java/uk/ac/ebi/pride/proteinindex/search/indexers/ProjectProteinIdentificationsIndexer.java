@@ -60,38 +60,15 @@ public class ProjectProteinIdentificationsIndexer {
                                 proteinIdentified.getAccession()
                         );
 
-                // if the protein is already in the index... update
-                if ( proteinIdentificationsFromIndex != null && proteinIdentificationsFromIndex.size()>0 ) {
-                    // get the existing protein
-                    ProteinIdentified proteinIdentifiedFromIndex = proteinIdentificationsFromIndex.get(0);
-                    // add new project accession
-                    if (proteinIdentifiedFromIndex.getProjectAccessions() == null) {
-                        proteinIdentifiedFromIndex.setProjectAccessions(new TreeSet<String>());
-                    }
-                    proteinIdentifiedFromIndex.getProjectAccessions().add(projectAccession);
-                    // add new assay accession
-                    if (proteinIdentifiedFromIndex.getAssayAccessions() == null) {
-                        proteinIdentifiedFromIndex.setAssayAccessions(new TreeSet<String>());
-                    }
-                    proteinIdentifiedFromIndex.getAssayAccessions().add(assayAccession);
-                    // add to save
-                    proteinIdentificationsToIndex.put(proteinIdentifiedFromIndex.getAccession(), proteinIdentifiedFromIndex);
-
-                    logger.debug(
-                            "UPDATED protein " + proteinIdentified.getAccession() +
-                                    " from PROJECT:" + projectAccession +
-                                    " ASSAY:" + assayAccession
-                    );
-                }
                 // if it is a new protein...
-                else {
-                    // set the project accessions
+                if ( proteinIdentificationsFromIndex == null || proteinIdentificationsFromIndex.size()==0 ) {
+                    // set the project accessions - TODO: this will be out as soon as the schama will change
                     proteinIdentified.setProjectAccessions(
-                            new TreeSet<String>(Arrays.asList(projectAccession))
+                            new TreeSet<String>()
                     );
-                    // set assay accessions
+                    // set assay accessions - TODO: this will be out as soon as the schama will change
                     proteinIdentified.setAssayAccessions(
-                            new TreeSet<String>(Arrays.asList(assayAccession))
+                            new TreeSet<String>()
                     );
 
                     // add to save
@@ -109,12 +86,9 @@ public class ProjectProteinIdentificationsIndexer {
                 logger.error("PROJECT " + projectAccession);
                 e.printStackTrace();
             }
-
-
-
         }
 
-        // save all assay identifications
+        // save all proteins
         long startTime2 = System.currentTimeMillis();
         proteinIdentificationIndexService.save(proteinIdentificationsToIndex.values());
         long endTime2 = System.currentTimeMillis();
