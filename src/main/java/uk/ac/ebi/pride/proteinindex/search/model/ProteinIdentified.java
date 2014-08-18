@@ -56,18 +56,22 @@ public class ProteinIdentified implements ProteinReferenceProvider,ProteinDetail
         this.synonyms = synonyms;
     }
 
+    @Deprecated
     public Set<String> getProjectAccessions() {
         return projectAccessions;
     }
 
+    @Deprecated
     public void setProjectAccessions(Set<String> projectAccessions) {
         this.projectAccessions = projectAccessions;
     }
 
+    @Deprecated
     public Set<String> getAssayAccessions() {
         return assayAccessions;
     }
 
+    @Deprecated
     public void setAssayAccessions(Set<String> assayAccessions) {
         this.assayAccessions = assayAccessions;
     }
