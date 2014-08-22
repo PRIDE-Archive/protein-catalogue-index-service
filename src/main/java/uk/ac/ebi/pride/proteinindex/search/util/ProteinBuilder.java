@@ -89,7 +89,6 @@ public class ProteinBuilder {
                 proteinIdentified.setProjectAccessions(new TreeSet<String>());
                 proteinIdentified.setAssayAccessions(new TreeSet<String>());
                 try {
-                    // TODO: we must never correct accessions for protein identifications, just for accessions in the Catalog
                     String correctedAccession = getCorrectedAccession(mzTabProtein.getAccession(), mzTabProtein.getDatabase());
                     proteinIdentified.setAccession(correctedAccession);
                     res.add(proteinIdentified);
