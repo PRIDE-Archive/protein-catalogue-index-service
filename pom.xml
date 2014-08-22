@@ -62,7 +62,7 @@
 
     <properties>
         <archive.repo.version>0.1.17-SNAPSHOT</archive.repo.version>
-        <archive.data.provider.api.version>2.0.3</archive.data.provider.api.version>
+        <archive.data.provider.api.version>2.0.5-SNAPSHOT</archive.data.provider.api.version>
         <jmztab.version>3.0.0</jmztab.version>
     </properties>
 
