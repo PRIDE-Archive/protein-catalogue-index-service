@@ -36,12 +36,12 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
     private static final String PARTIAL_ACCESSION_WILDCARD = "PROTEIN-*";
     private static final String PARTIAL_ACCESSION_WILDCARD_END_1 = "*1-ACCESSION";
     private static final String PARTIAL_ACCESSION_WILDCARD_END_2 = "*2-ACCESSION";
-    private static final String PROJECT_1_ACCESSION = "PROJECT-1-ACCESSION";
-    private static final String PROJECT_2_ACCESSION = "PROJECT-2-ACCESSION";
-    private static final String ASSAY_1_ACCESSION = "ASSAY-1-ACCESSION";
-    private static final String ASSAY_2_ACCESSION = "ASSAY-2-ACCESSION";
     private static final String PROTEIN_1_NAME = "PROTEIN_1_NAME";
     private static final String PROTEIN_2_NAME = "PROTEIN_2_NAME";
+    private static final String PROTEIN_1_UNIPROT_MAPPING = "PROTEIN-1-UNIPROT-MAPPING";
+    private static final String PROTEIN_1_ENSEMBL_MAPPING = "PROTEIN-1-ENSEMBL-MAPPING";
+    private static final String PROTEIN_2_UNIPROT_MAPPING = "PROTEIN-1-UNIPROT-MAPPING";
+    private static final String PROTEIN_2_ENSEMBL_MAPPING = "PROTEIN-1-ENSEMBL-MAPPING";
 
     private SolrServer server;
     private SolrProteinIdentificationRepositoryFactory solrProteinIdentificationRepositoryFactory;
@@ -102,16 +102,16 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
     }
 
     @Test
-    public void testSearchBySynonym() throws Exception {
+    public void testSearchByOtherMapping() throws Exception {
         addProteinIdentification_1();
         addProteinIdentification_2();
 
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
 
-        Collection<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findBySynonyms(PROTEIN_1_ACCESSION_SYNONYM_1.replace(':', '_'));
+        Collection<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByOtherMapping(PROTEIN_1_ACCESSION_SYNONYM_1.replace(':', '_'));
         assertEquals(2, proteinIdentifieds.size());
 
-        proteinIdentifieds = proteinIdentificationSearchService.findBySynonyms(PROTEIN_1_ACCESSION_SYNONYM_2);
+        proteinIdentifieds = proteinIdentificationSearchService.findByOtherMapping(PROTEIN_1_ACCESSION_SYNONYM_2);
         assertEquals(1, proteinIdentifieds.size());
     }
 
@@ -155,67 +155,29 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
     }
 
     @Test
-    public void testFindByProjectAccession() throws Exception {
-        addProteinIdentification_1_2(); // adds a protein to two projects in order to test paging results
+    public void testFindByAccessionWildcard() throws Exception {
+        addProteinIdentification_1();
         addProteinIdentification_2();
 
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
 
-        // find all results for that project
-        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByProjectAccessions(PROJECT_2_ACCESSION);
+        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAccession(PARTIAL_ACCESSION_WILDCARD);
+
         assertEquals(2, proteinIdentifieds.size());
-
-        // same query, but with paged result
-        Page<ProteinIdentified> proteinsPage = proteinIdentificationSearchService.findByProjectAccessions(PROJECT_2_ACCESSION, new PageRequest(1, 1));
-        assertEquals(1, proteinsPage.getNumberOfElements());
     }
 
     @Test
-    public void testFindByAccessionWildcardAndProjectAccession() throws Exception {
+    public void testFindByOtherMapping() throws Exception {
         addProteinIdentification_1();
         addProteinIdentification_2();
 
         ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
 
-        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAccessionAndProjectAccessions(PARTIAL_ACCESSION_WILDCARD, PROJECT_1_ACCESSION);
+        List<ProteinIdentified> identifiedProteins = proteinIdentificationSearchService.findByOtherMapping(PROTEIN_1_ACCESSION_SYNONYM_1);
 
-        assertEquals(1, proteinIdentifieds.size());
-    }
+        assertEquals(2, identifiedProteins.size());
 
-    @Test
-    public void testFindByAssayAccession() throws Exception {
-        addProteinIdentification_1_2();  // adds a protein to two assays in order to test paging results
-        addProteinIdentification_2();
-
-        ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
-
-        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAssayAccessions(ASSAY_2_ACCESSION);
-        assertEquals(2, proteinIdentifieds.size());
-
-        Page<ProteinIdentified> proteinsPage = proteinIdentificationSearchService.findByAssayAccessions(ASSAY_2_ACCESSION, new PageRequest(1, 1));
-        assertEquals(1, proteinsPage.getNumberOfElements());
-    }
-
-    @Test
-    public void testFindByAccessionWildcardAndAssayAccession() throws Exception {
-        addProteinIdentification_1();
-        addProteinIdentification_2();
-
-        ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
-
-        List<ProteinIdentified> proteinIdentifieds = proteinIdentificationSearchService.findByAccessionAndAssayAccessions(PARTIAL_ACCESSION_WILDCARD, ASSAY_1_ACCESSION);
-
-        assertEquals(1, proteinIdentifieds.size());
-    }
-
-    @Test
-    public void testFindBySynonym() throws Exception {
-        addProteinIdentification_1();
-        addProteinIdentification_2();
-
-        ProteinIdentificationSearchService proteinIdentificationSearchService = new ProteinIdentificationSearchService(this.solrProteinIdentificationRepositoryFactory.create());
-
-        List<ProteinIdentified> identifiedProteins = proteinIdentificationSearchService.findBySynonymsAndProjectAccessions(PROTEIN_1_ACCESSION_SYNONYM_1, PROJECT_1_ACCESSION);
+        identifiedProteins = proteinIdentificationSearchService.findByOtherMapping(PROTEIN_1_ACCESSION_SYNONYM_2);
 
         assertEquals(1, identifiedProteins.size());
     }
@@ -223,55 +185,29 @@ public class SolrProteinIdentifiedSearchTest extends SolrTestCaseJ4 {
     private void addProteinIdentification_1() {
         ProteinIdentified proteinIdentified = new ProteinIdentified();
         proteinIdentified.setAccession(PROTEIN_1_ACCESSION);
-        proteinIdentified.setSynonyms(new TreeSet<String>(Arrays.asList(PROTEIN_1_ACCESSION_SYNONYM_1)));
-        proteinIdentified.setProjectAccessions(new TreeSet<String>(Arrays.asList(PROJECT_1_ACCESSION)));
-        proteinIdentified.setAssayAccessions(new TreeSet<String>(Arrays.asList(ASSAY_1_ACCESSION)));
+        proteinIdentified.setUniprotMapping(PROTEIN_1_UNIPROT_MAPPING);
+        proteinIdentified.setEnsemblMapping(PROTEIN_1_ENSEMBL_MAPPING);
 
         Set<String> synonyms = new TreeSet<String>();
         synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_1);
         synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_2);
-        proteinIdentified.setSynonyms(synonyms);
+        proteinIdentified.setOtherMappings(synonyms);
         proteinIdentified.setDescription(Arrays.asList(ProteinDetailUtils.NAME + PROTEIN_1_NAME));
 
         ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create(), server);
         proteinIdentificationIndexService.save(proteinIdentified);
     }
 
-    private void addProteinIdentification_1_2() {
-        // modified method to associate the protein to two projects and two assays, in order to test paging
-        ProteinIdentified proteinIdentified = new ProteinIdentified();
-        proteinIdentified.setAccession(PROTEIN_1_ACCESSION);
-
-        Set<String> projects = new TreeSet<String>();
-        projects.add(PROJECT_1_ACCESSION);
-        projects.add(PROJECT_2_ACCESSION);
-        proteinIdentified.setProjectAccessions(projects);
-
-        Set<String> assays = new TreeSet<String>();
-        assays.add(ASSAY_1_ACCESSION);
-        assays.add(ASSAY_2_ACCESSION);
-        proteinIdentified.setAssayAccessions(assays);
-
-        Set<String> synonyms = new TreeSet<String>();
-        synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_1);
-        synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_2);
-        proteinIdentified.setSynonyms(synonyms);
-        proteinIdentified.setDescription(Arrays.asList(ProteinDetailUtils.NAME + PROTEIN_1_NAME));
-
-        ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create(), server);
-        proteinIdentificationIndexService.save(proteinIdentified);
-    }
 
     private void addProteinIdentification_2() {
         ProteinIdentified proteinIdentified = new ProteinIdentified();
         proteinIdentified.setAccession(PROTEIN_2_ACCESSION);
-        proteinIdentified.setSynonyms(new TreeSet<String>(Arrays.asList(PROTEIN_1_ACCESSION_SYNONYM_1)));
-        proteinIdentified.setProjectAccessions(new TreeSet<String>(Arrays.asList(PROJECT_2_ACCESSION)));
-        proteinIdentified.setAssayAccessions(new TreeSet<String>(Arrays.asList(ASSAY_2_ACCESSION)));
+        proteinIdentified.setUniprotMapping(PROTEIN_2_UNIPROT_MAPPING);
+        proteinIdentified.setEnsemblMapping(PROTEIN_2_ENSEMBL_MAPPING);
 
         Set<String> synonyms = new TreeSet<String>();
         synonyms.add(PROTEIN_1_ACCESSION_SYNONYM_1);
-        proteinIdentified.setSynonyms(synonyms);
+        proteinIdentified.setOtherMappings(synonyms);
         proteinIdentified.setDescription(Arrays.asList(ProteinDetailUtils.NAME + PROTEIN_2_NAME));
 
         ProteinIdentificationIndexService proteinIdentificationIndexService = new ProteinIdentificationIndexService(this.solrProteinIdentificationRepositoryFactory.create(), server);

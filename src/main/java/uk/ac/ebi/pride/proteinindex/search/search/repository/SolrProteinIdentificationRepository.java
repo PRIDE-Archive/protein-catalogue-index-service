@@ -16,37 +16,35 @@ import java.util.List;
  * Note: using the Query annotation allows wildcards to go straight into the query
  */
 public interface SolrProteinIdentificationRepository extends SolrCrudRepository<ProteinIdentified, String> {
+
     // Accession query methods
     @Query("id:?0")
     List<ProteinIdentified> findByAccession(String accession);
     @Query("id:(?0)")
     List<ProteinIdentified> findByAccessionIn(Collection<String> accessions);
 
-    // Synonym query methods
-    @Query("synonyms:?0")
-    List<ProteinIdentified> findBySynonyms(String synonym);
-    @Query("synonyms:?0 AND project_accessions:?1")
-    List<ProteinIdentified> findBySynonymsAndProjectAccessions(String synonym, String projectAccession);
-    List<ProteinIdentified> findBySynonymsIn(Collection<String> synonyms);
+    // Mapping query methods
+    @Query("uniprot_mapping:?0")
+    List<ProteinIdentified> findByUniprotMapping(String uniprotMapping);
+    @Query("uniprot_mapping:(?0)")
+    List<ProteinIdentified> findByUniprotMappingIn(Collection<String> uniprotMappings);
+    @Query("ensembl_mapping:?0")
+    List<ProteinIdentified> findByEnsemblMapping(String ensemblMapping);
+    @Query("ensembl_mapping:(?0)")
+    List<ProteinIdentified> findByEnsemblMappingIn(Collection<String> ensemblMappings);
+    @Query("uniprot_mapping:?0 OR ensembl_mapping:?0")
+    List<ProteinIdentified> findByUniprotMappingOrEnsemblMapping(String mapping);
+    @Query("uniprot_mapping:(?0) OR ensembl_mapping:(?0)")
+    List<ProteinIdentified> findByUniprotMappingOrEnsemblMappingIn(Collection<String> mappings);
+    @Query("other_mappings:?0")
+    List<ProteinIdentified> findByOtherMapping(String otherMapping);
+    @Query("other_mappings:(?0)")
+    List<ProteinIdentified> findByOtherMappingIn(Collection<String> otherMappings);
 
-    // Project accession query methods
-    @Query("project_accessions:?0")
-    List<ProteinIdentified> findByProjectAccessions(String projectAccession);
-    @Query("project_accessions:?0")
-    Page<ProteinIdentified> findByProjectAccessions(String projectAccession, Pageable pageable);
-    @Query("id:?0 AND project_accessions:?1")
-    List<ProteinIdentified> findByAccessionAndProjectAccessions(String accession, String projectAccession);
-    @Query("project_accessions:(?0)")
-    List<ProteinIdentified> findByProjectAccessionsIn(Collection<String> projectAccessions);
+    // Sequence query methods
+    @Query("submitted_sequence:?0 OR inferred_sequence:?0")
+    List<ProteinIdentified> findBySequence(String sequence);
+    @Query("submitted_sequence:(?0) OR inferred_sequence:(?0)")
+    List<ProteinIdentified> findBySequenceIn(Collection<String> sequences);
 
-
-    // Assay accession query methods
-    @Query("assay_accessions:?0")
-    List<ProteinIdentified> findByAssayAccessions(String assayAccession);
-    @Query("assay_accessions:?0")
-    Page<ProteinIdentified> findByAssayAccessions(String assayAccession, Pageable pageable);
-    @Query("id:?0 AND assay_accessions:?1")
-    List<ProteinIdentified> findByAccessionAndAssayAccessions(String accession, String assayAccession);
-    @Query("assay_accessions:(?0)")
-    List<ProteinIdentified> findByAssayAccessionsIn(Collection<String> assayAccessions);
 }

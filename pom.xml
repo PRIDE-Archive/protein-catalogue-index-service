@@ -10,7 +10,7 @@
 
     <groupId>uk.ac.ebi.pride</groupId>
     <artifactId>protein-index-search</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.1-SNAPSHOT</version>
 	<name>protein-index-search</name>
     <url>http://www.ebi.ac.uk/pride</url>
 
@@ -62,7 +62,7 @@
 
     <properties>
         <archive.repo.version>0.1.17-SNAPSHOT</archive.repo.version>
-        <archive.data.provider.api.version>2.0.5-SNAPSHOT</archive.data.provider.api.version>
+        <archive.data.provider.api.version>2.0.6-SNAPSHOT</archive.data.provider.api.version>
         <jmztab.version>3.0.0</jmztab.version>
     </properties>
 

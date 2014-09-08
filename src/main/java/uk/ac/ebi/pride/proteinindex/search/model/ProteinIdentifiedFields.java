@@ -5,12 +5,12 @@ package uk.ac.ebi.pride.proteinindex.search.model;
  * @version $Id$
  */
 public class ProteinIdentifiedFields {
+
     public static final String ACCESSION = "id";
-    public static final String SYNONYMS = "synonyms";
-    @Deprecated
-    public static final String PROJECT_ACCESSIONS = "project_accessions";
-    @Deprecated
-    public static final String ASSAY_ACCESSIONS = "assay_accessions";
-    public static final String SEQUENCE = "sequence";
+    public static final String UNIPROT_MAPPING = "uniprot_mapping";
+    public static final String ENSEMBL_MAPPING = "ensembl_mapping";
+    public static final String OTHER_MAPPINGS = "other_mappings";
+    public static final String INFERRED_SEQUENCE = "inferred_sequence";
     public static final String DESCRIPTION = "description";
+
 }

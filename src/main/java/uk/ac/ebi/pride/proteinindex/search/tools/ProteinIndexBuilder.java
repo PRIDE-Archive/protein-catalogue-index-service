@@ -1,6 +1,5 @@
 package uk.ac.ebi.pride.proteinindex.search.tools;
 
-import org.apache.solr.client.solrj.SolrServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +15,9 @@ import uk.ac.ebi.pride.archive.repo.file.ProjectFile;
 import uk.ac.ebi.pride.archive.repo.file.ProjectFileRepository;
 import uk.ac.ebi.pride.archive.repo.project.ProjectRepository;
 import uk.ac.ebi.pride.proteinindex.search.indexers.ProjectProteinIdentificationsIndexer;
-import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationIndexService;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationSearchService;
-import uk.ac.ebi.pride.proteinindex.search.synonyms.ProteinAccessionSynonymsFinder;
 import uk.ac.ebi.pride.proteinindex.search.util.ErrorLogOutputStream;
-import uk.ac.ebi.pride.proteinindex.search.util.ProteinBuilder;
 
 import java.io.File;
 import java.io.IOException;

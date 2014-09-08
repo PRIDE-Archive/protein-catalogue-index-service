@@ -13,27 +13,26 @@ import java.util.Set;
  * @version $Id$
  *
  */
-public class ProteinIdentified implements ProteinReferenceProvider,ProteinDetailProvider {
+public class ProteinIdentified implements ProteinReferenceProvider, ProteinDetailProvider {
 
     @Field(ProteinIdentifiedFields.ACCESSION)
     private String accession;
 
-    @Field(ProteinIdentifiedFields.PROJECT_ACCESSIONS)
-    private Set<String> projectAccessions;
+    @Field(ProteinIdentifiedFields.UNIPROT_MAPPING)
+    private String uniprotMapping;
 
-    @Field(ProteinIdentifiedFields.ASSAY_ACCESSIONS)
-    private Set<String> assayAccessions;
+    @Field(ProteinIdentifiedFields.ENSEMBL_MAPPING)
+    private String ensemblMapping;
 
-    @Field(ProteinIdentifiedFields.SYNONYMS)
-    private Set<String> synonyms;
+    @Field(ProteinIdentifiedFields.OTHER_MAPPINGS)
+    private Set<String> otherMappings;
 
-    @Field(ProteinIdentifiedFields.SEQUENCE)
-    private String sequence;
+    @Field(ProteinIdentifiedFields.INFERRED_SEQUENCE)
+    private String inferredSequence;
 
     @Field(ProteinIdentifiedFields.DESCRIPTION)
     private List<String> description;
 
-    @Override
     public String getAccession() {
         return accession;
     }
@@ -42,46 +41,36 @@ public class ProteinIdentified implements ProteinReferenceProvider,ProteinDetail
         this.accession = accession;
     }
 
-    @Override
-    public Set<String> getSynonyms() {
-        return synonyms;
+    public String getUniprotMapping() {
+        return uniprotMapping;
     }
 
-    @Override
-    public String getName() {
-        return ProteinDetailUtils.getNameFromDescription(description);
+    public void setUniprotMapping(String uniprotMapping) {
+        this.uniprotMapping = uniprotMapping;
     }
 
-    public void setSynonyms(Set<String> synonyms) {
-        this.synonyms = synonyms;
+    public String getEnsemblMapping() {
+        return ensemblMapping;
     }
 
-    @Deprecated
-    public Set<String> getProjectAccessions() {
-        return projectAccessions;
+    public void setEnsemblMapping(String ensemblMapping) {
+        this.ensemblMapping = ensemblMapping;
     }
 
-    @Deprecated
-    public void setProjectAccessions(Set<String> projectAccessions) {
-        this.projectAccessions = projectAccessions;
+    public Set<String> getOtherMappings() {
+        return otherMappings;
     }
 
-    @Deprecated
-    public Set<String> getAssayAccessions() {
-        return assayAccessions;
+    public void setOtherMappings(Set<String> otherMappings) {
+        this.otherMappings = otherMappings;
     }
 
-    @Deprecated
-    public void setAssayAccessions(Set<String> assayAccessions) {
-        this.assayAccessions = assayAccessions;
+    public String getInferredSequence() {
+        return inferredSequence;
     }
 
-    public String getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(String sequence) {
-        this.sequence = sequence;
+    public void setInferredSequence(String inferredSequence) {
+        this.inferredSequence = inferredSequence;
     }
 
     public List<String> getDescription() {
@@ -90,5 +79,10 @@ public class ProteinIdentified implements ProteinReferenceProvider,ProteinDetail
 
     public void setDescription(List<String> description) {
         this.description = description;
+    }
+
+    @Override
+    public String getName() {
+        return ProteinDetailUtils.getNameFromDescription(description);
     }
 }

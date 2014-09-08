@@ -3,14 +3,11 @@ package uk.ac.ebi.pride.proteinindex.search.indexers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.ebi.pride.jmztab.model.MZTabFile;
-import uk.ac.ebi.pride.archive.dataprovider.identification.ProteinReferenceProvider;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationIndexService;
 import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationSearchService;
-import uk.ac.ebi.pride.proteinindex.search.synonyms.ProteinAccessionSynonymsFinder;
 import uk.ac.ebi.pride.proteinindex.search.util.ProteinBuilder;
 
-import java.io.File;
 import java.util.*;
 
 /**
@@ -30,21 +27,21 @@ public class ProjectProteinIdentificationsIndexer {
         this.proteinIdentificationIndexService = proteinIdentificationIndexService;
     }
 
-    public void deleteProjectAndAssayFromProteins(String projectAccession, Collection<String> assayAccessions) {
-
-        // search by project accession
-        List<ProteinIdentified> proteinsIdentified = this.proteinIdentificationSearchService.findByProjectAccessions(projectAccession);
-        for (ProteinIdentified protein: proteinsIdentified) {
-            protein.getProjectAccessions().remove(projectAccession);
-            protein.getAssayAccessions().removeAll(assayAccessions);
-            if (protein.getProjectAccessions().isEmpty() && protein.getAssayAccessions().isEmpty()) {
-                this.proteinIdentificationIndexService.delete(protein.getAccession());
-            } else {
-                this.proteinIdentificationIndexService.save(protein);
-            }
-        }
-
-    }
+//    public void deleteProjectAndAssayFromProteins(String projectAccession, Collection<String> assayAccessions) {
+//
+//        // search by project accession
+//        List<ProteinIdentified> proteinsIdentified = this.proteinIdentificationSearchService.findByProjectAccessions(projectAccession);
+//        for (ProteinIdentified protein: proteinsIdentified) {
+//            protein.getProjectAccessions().remove(projectAccession);
+//            protein.getAssayAccessions().removeAll(assayAccessions);
+//            if (protein.getProjectAccessions().isEmpty() && protein.getAssayAccessions().isEmpty()) {
+//                this.proteinIdentificationIndexService.delete(protein.getAccession());
+//            } else {
+//                this.proteinIdentificationIndexService.save(protein);
+//            }
+//        }
+//
+//    }
 
     public void indexAllProteinIdentificationsForProjectAndAssay(String projectAccession, String assayAccession, MZTabFile mzTabFile) {
 
@@ -62,15 +59,6 @@ public class ProjectProteinIdentificationsIndexer {
 
                 // if it is a new protein...
                 if ( proteinIdentificationsFromIndex == null || proteinIdentificationsFromIndex.size()==0 ) {
-                    // set the project accessions - TODO: this will be out as soon as the schama will change
-                    proteinIdentified.setProjectAccessions(
-                            new TreeSet<String>()
-                    );
-                    // set assay accessions - TODO: this will be out as soon as the schama will change
-                    proteinIdentified.setAssayAccessions(
-                            new TreeSet<String>()
-                    );
-
                     // add to save
                     proteinIdentificationsToIndex.put(proteinIdentified.getAccession(), proteinIdentified);
 

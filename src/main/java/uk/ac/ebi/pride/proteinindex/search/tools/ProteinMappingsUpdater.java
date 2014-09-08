@@ -15,9 +15,9 @@ import uk.ac.ebi.pride.proteinindex.search.search.service.ProteinIdentificationS
  * @version $Id$
  */
 @Component
-public class ProteinSynonymsUpdater {
+public class ProteinMappingsUpdater {
 
-    private static Logger logger = LoggerFactory.getLogger(ProteinSynonymsUpdater.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(ProteinMappingsUpdater.class.getName());
 
     @Autowired
     private ProteinIdentificationSearchService proteinIdentificationSearchService;
@@ -27,36 +27,36 @@ public class ProteinSynonymsUpdater {
 
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("spring/app-context.xml");
-        ProteinSynonymsUpdater proteinSynonymsUpdater = context.getBean(ProteinSynonymsUpdater.class);
+        ProteinMappingsUpdater proteinMappingsUpdater = context.getBean(ProteinMappingsUpdater.class);
 
         if ("all".equals(args[0])) {
-            addSynonymsToAllExistingProteins(proteinSynonymsUpdater);
+            addMappingsToAllExistingProteins(proteinMappingsUpdater);
         } else if ("inc".equals(args[0])) {
-            addSynonymsToProteinsWithNoSynonyms(proteinSynonymsUpdater);
+            addMappingsToProteinsWithNoMappings(proteinMappingsUpdater);
         }
     }
 
-    private static void addSynonymsToAllExistingProteins(ProteinSynonymsUpdater proteinSynonymsUpdater) {
+    private static void addMappingsToAllExistingProteins(ProteinMappingsUpdater proteinMappingsUpdater) {
         logger.info("Starting application...");
         // create the indexer
         logger.info("Creating protein details indexer...");
-        ProteinDetailsIndexer proteinDetailsIndexer = new ProteinDetailsIndexer(proteinSynonymsUpdater.proteinIdentificationSearchService, proteinSynonymsUpdater.proteinIdentificationIndexService);
+        ProteinDetailsIndexer proteinDetailsIndexer = new ProteinDetailsIndexer(proteinMappingsUpdater.proteinIdentificationSearchService, proteinMappingsUpdater.proteinIdentificationIndexService);
         logger.info("Protein details indexer created!");
         // update all
         logger.info("Starting update process...");
-        proteinDetailsIndexer.addSynonymsToAllExistingProteins();
+        proteinDetailsIndexer.addMappingsToAllExistingProteins();
         logger.info("Update process completed!");
     }
 
-    private static void addSynonymsToProteinsWithNoSynonyms(ProteinSynonymsUpdater proteinSynonymsUpdater) {
+    private static void addMappingsToProteinsWithNoMappings(ProteinMappingsUpdater proteinMappingsUpdater) {
         logger.info("Starting application...");
         // create the indexer
         logger.info("Creating protein details indexer...");
-        ProteinDetailsIndexer proteinDetailsIndexer = new ProteinDetailsIndexer(proteinSynonymsUpdater.proteinIdentificationSearchService, proteinSynonymsUpdater.proteinIdentificationIndexService);
+        ProteinDetailsIndexer proteinDetailsIndexer = new ProteinDetailsIndexer(proteinMappingsUpdater.proteinIdentificationSearchService, proteinMappingsUpdater.proteinIdentificationIndexService);
         logger.info("Protein details indexer created!");
         // update all
         logger.info("Starting update process...");
-        proteinDetailsIndexer.addSynonymsToProteinsWithNoSynonyms();
+        proteinDetailsIndexer.addMappingsToProteinsWithNoMappings();
         logger.info("Update process completed!");
     }
 

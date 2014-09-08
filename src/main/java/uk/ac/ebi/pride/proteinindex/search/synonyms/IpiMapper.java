@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
@@ -14,7 +13,7 @@ import java.util.regex.Pattern;
  * @author Jose A. Dianes
  * @version $Id$
  *
- * Note: this class is handling its own IOException. As a consequence, it might be initialized with an empty mappings MAP
+ * Note: this class is handling its own IOException. As a consequence, it might be initialized with an empty ipiMappings MAP
  */
 public class IpiMapper {
 
@@ -22,16 +21,16 @@ public class IpiMapper {
 
     private static final String HEADER_LINE_PATTERN = "^UniProtKB\\s+IPI$";
 
-    private Map<String, TreeSet<String>> mappings;
+    private Map<String, TreeSet<String>> ipiMappings;
 
-    private InputStream mappingsFile;
+    private InputStream ipiMappingsFile;
 
     public IpiMapper(String ipiFilePath) {
         try {
-            mappingsFile = IpiMapper.class.getClassLoader().getResourceAsStream(ipiFilePath);
-            mappings = new HashMap<String, TreeSet<String>>();
+            ipiMappingsFile = IpiMapper.class.getClassLoader().getResourceAsStream(ipiFilePath);
+            ipiMappings = new HashMap<String, TreeSet<String>>();
             buildMappingsFromFile();
-            logger.debug("IPI-UniProt mappings file contains " + mappings.size() + " entries");
+            logger.debug("IPI-UniProt mappings file contains " + ipiMappings.size() + " entries");
         } catch (Exception e) {
             logger.error("Cannot create IPI mappings at " + ipiFilePath);
             logger.error("Reason: ");
@@ -40,7 +39,7 @@ public class IpiMapper {
     }
 
     public TreeSet<String> getMappingsForIpiAccession(String ipiAccession) {
-        return mappings.get(ipiAccession);
+        return ipiMappings.get(ipiAccession);
     }
 
     private void buildMappingsFromFile() throws IOException {
@@ -48,7 +47,7 @@ public class IpiMapper {
         Pattern headerPattern = Pattern.compile(HEADER_LINE_PATTERN);
 
         // skip all the comments, reach the first line after the header
-        BufferedReader reader = new BufferedReader( new InputStreamReader(mappingsFile) );
+        BufferedReader reader = new BufferedReader( new InputStreamReader(ipiMappingsFile) );
 
         String line = reader.readLine();
 
@@ -67,10 +66,10 @@ public class IpiMapper {
                 String[] tokens = line.split("\\s+");
                 String ipiAccession = tokens[1];
                 String uniprotAccession = tokens[0];
-                if ( !mappings.containsKey(ipiAccession) ) {
-                    mappings.put(ipiAccession, new TreeSet<String>());
+                if ( !ipiMappings.containsKey(ipiAccession) ) {
+                    ipiMappings.put(ipiAccession, new TreeSet<String>());
                 }
-                mappings.get(ipiAccession).add(uniprotAccession);
+                ipiMappings.get(ipiAccession).add(uniprotAccession);
                 logger.debug("Added: IPI " + ipiAccession + " to UniProt " + uniprotAccession);
                 // next line
                 line = reader.readLine();

@@ -85,9 +85,7 @@ public class ProteinBuilder {
             Collection<Protein> mzTabProteins = tabFile.getProteins();
             for (Protein mzTabProtein: mzTabProteins) {
                 ProteinIdentified proteinIdentified = new ProteinIdentified();
-                proteinIdentified.setSynonyms(new TreeSet<String>());
-                proteinIdentified.setProjectAccessions(new TreeSet<String>());
-                proteinIdentified.setAssayAccessions(new TreeSet<String>());
+                proteinIdentified.setOtherMappings(new TreeSet<String>());
                 try {
                     String correctedAccession = getCorrectedAccession(mzTabProtein.getAccession(), mzTabProtein.getDatabase());
                     proteinIdentified.setAccession(correctedAccession);
@@ -147,9 +145,7 @@ public class ProteinBuilder {
             // add details to proteins
             for (ProteinIdentified protein: proteins) {
                 if (details.containsKey(protein.getAccession())) {
-                    if (details.get(protein.getAccession()).getSequenceString() != null) {
-                        protein.setSequence(details.get(protein.getAccession()).getSequenceString());
-                    }
+                    protein.setInferredSequence(details.get(protein.getAccession()).getSequenceString());
                     if (details.get(protein.getAccession()).getName() != null) {
                         protein.setDescription(Arrays.asList(ProteinDetailUtils.NAME + details.get(protein.getAccession()).getName()));
                     }

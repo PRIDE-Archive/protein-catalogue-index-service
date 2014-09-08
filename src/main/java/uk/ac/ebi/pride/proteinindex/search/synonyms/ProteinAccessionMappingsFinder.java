@@ -4,9 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
 import uk.ac.ebi.pride.tools.protein_details_fetcher.util.ProteinAccessionPattern;
-import uk.ac.ebi.pride.archive.dataprovider.identification.ProteinReferenceProvider;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,9 +19,9 @@ import java.util.*;
  * Note: synonyms will include the source accession itself
  *
  */
-public class ProteinAccessionSynonymsFinder {
+public class ProteinAccessionMappingsFinder {
     private static final String GI_PREFIX = "gi";
-    private static Logger logger = LoggerFactory.getLogger(ProteinAccessionSynonymsFinder.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(ProteinAccessionMappingsFinder.class.getName());
 
     private static final int MAX_SYNONYMS_REQUEST = 100;
 
@@ -49,141 +47,230 @@ public class ProteinAccessionSynonymsFinder {
 
     private static final IpiMapper ipiMappings = new IpiMapper(IPI_FILE_PATH);
 
+
     /**
-     * Given a collection of protein accessions, returns a map of synonyms for them
+     * Builds a map of protein accession mappings from different databases to UniProt
+     *
      * @param accessions
-     * @return a Map from the original protein accessions to their synonyms
+     * @return
      * @throws IOException
      */
-    public static Map<String, TreeSet<String>> findProteinSynonymsForAccession(Set<String> accessions) throws IOException {
-        Map<String, TreeSet<String>> res = new HashMap<String, TreeSet<String>>();
+    public static Map<String, String> findProteinUniprotMappingsForAccession(Set<String> accessions) throws IOException {
+
+        Map<String, String> res = new HashMap<String, String>();
 
         Map<String, TreeSet<String>> accessionsByDb = groupAccessionsByDb(accessions);
 
-        // first, we get Uniprot accessions for each of the accessions
         if ( accessionsByDb != null && accessionsByDb.size()>0 ) {
 
-            // TODO: review this, we need to add as destination DB as well
+            // get mappings for IPI accessions from provided file
             if (accessionsByDb.containsKey(IPI_TAG)) {
                 Map<String, TreeSet<String>> ipiMappingsMap = new HashMap<String, TreeSet<String>>();
 
                 long totalIpiMappings = 0;
 
-                for ( String ipiAccession: accessionsByDb.get(IPI_TAG) ) {
+                for (String ipiAccession : accessionsByDb.get(IPI_TAG)) {
                     TreeSet<String> ipiMappingsForAccession = ipiMappings.getMappingsForIpiAccession(ipiAccession);
-                    if (ipiMappingsForAccession == null)
-                        ipiMappingsForAccession = new TreeSet<String>();
-                    ipiMappingsForAccession.add(ipiAccession); // the accession itself is considered its synonym in our domain
-                    ipiMappingsMap.put(ipiAccession, ipiMappingsForAccession);
-                    totalIpiMappings = totalIpiMappings + ipiMappingsForAccession.size();
+
+                    if ( ipiMappingsForAccession != null && ipiAccession.length()>0 )
+                        ipiMappingsMap.put( ipiAccession, ipiMappingsForAccession ); // here we are assuming unique uniprot mappings for each IPI accession
+
+                    totalIpiMappings = totalIpiMappings + ipiMappingsForAccession.size(); // this is for logging purposes only
                 }
-                addAll(res, ipiMappingsMap);
+                addAllFirst(res, ipiMappingsMap);
                 logger.debug("Found a total of " + totalIpiMappings + " UniProt accession mappings for " + accessionsByDb.get(IPI_TAG).size() + " IPI accessions");
-                accessionsByDb.remove( IPI_TAG );
+                accessionsByDb.remove(IPI_TAG);
             }
 
             // now we are going to get mappings to Uniprot accessions for each of the originally submitted accessions, excluding IPI that
             // are taken from the mapping file
-            Map<String, TreeSet<String>> uniprotToOriginals = new HashMap<String, TreeSet<String>>();
-            Set<String> allUniprot = new TreeSet<String>();
-            for (String db: accessionsByDb.keySet()) {
+            for (String db : accessionsByDb.keySet()) {
                 Map<String, TreeSet<String>> mappings = getMappings(db, UNIPROT_KB_ACC_TAG, accessionsByDb.get(db));
-                // update the inverted
-                addAllInverted(uniprotToOriginals,mappings);
-                // update the all uniprot
-                addAllFlat(allUniprot,mappings);
-                // update result
-                addAll(res, mappings);
+                addAllFirst(res, mappings);
             }
 
-            // now we need to get synonyms for each of the other considered DBs
-            // for that we will use the already obtained Uniprot accessions
-            Map<String, TreeSet<String>> uniProtMappings = new HashMap<String, TreeSet<String>>();
-            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, ENSMBL_PROTEIN_TAG, allUniprot));
-            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, GI_NUMBER_TAG, allUniprot));
-            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, UNIPROT_KB_ACC_TAG, allUniprot));
-            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, UNIPROT_KB_ID_TAG, allUniprot));
-            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, REF_SEQ_PROTEIN_TAG, allUniprot));
-            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, UNI_PARC_TAG, allUniprot));
-
-            // now we need to merge them back to the original accessions, using the inverted map
-            for (String uniprotAccession: uniProtMappings.keySet()) {
-                for (String originalAccession: uniprotToOriginals.get(uniprotAccession)) {
-                    res.get(originalAccession).addAll(uniProtMappings.get(uniprotAccession));
-                }
-            }
-
-            logger.debug("Got " + getTotalSynonymsCount(res) + " synonyms in total for " + accessions.size() + " accessions");
-
-        }
-
-
-        return res;
-    }
-
-    /**
-     * Given a protein identifications map, add the synonyms to the protein identifications in the map
-     * @param proteinIdentificationsMap
-     */
-    public static Map<String, ProteinReferenceProvider> getAllSynonyms(Map<String, ? extends ProteinReferenceProvider> proteinIdentificationsMap) {
-        return getAllSynonyms(proteinIdentificationsMap, proteinIdentificationsMap.keySet());
-    }
-
-    /**
-     * Given a protein identifications map, and a list of accessions to consider, add the synonyms to the protein identifications
-     * in the map. This is a convenience method that allows filtering out some elements on the map.
-     * @param proteinIdentificationsMap
-     * @param accessionSynonymsToFind
-     */
-    public static Map<String, ProteinReferenceProvider> getAllSynonyms(Map<String, ? extends ProteinReferenceProvider> proteinIdentificationsMap, Set<String> accessionSynonymsToFind) {
-        Map<String, ProteinReferenceProvider> res = new HashMap<String, ProteinReferenceProvider>();
-
-        try {
-            Map<String, TreeSet<String>> synonyms = ProteinAccessionSynonymsFinder.findProteinSynonymsForAccession(accessionSynonymsToFind);
-
-            if (synonyms != null) {
-                for (String accession: synonyms.keySet()) {
-                    logger.debug("Adding synonyms to protein " + accession);
-                    ProteinReferenceProvider theIdentification = proteinIdentificationsMap.get(accession);
-                    if ( theIdentification == null) {
-                        String giAccession = "gi|" + accession;
-                        logger.debug("Trying again for GI accession " + giAccession + " from trimmed accession " + accession);
-                        theIdentification = proteinIdentificationsMap.get(giAccession);
-                        if (theIdentification == null) {
-                            giAccession = giAccession + "|";
-                            logger.debug("Trying again for GI accession " + giAccession + " from trimmed accession " + accession);
-                            theIdentification = proteinIdentificationsMap.get(giAccession);
-                            if (theIdentification != null) {
-                                logger.debug("Got identification " + theIdentification.getAccession());
-                            } else logger.debug("Still cannot get identification for accession " + accession);
-                        }
-                    }
-
-                    if (theIdentification != null) {
-                        ProteinIdentified proteinIdentified = new ProteinIdentified();
-                        proteinIdentified.setAccession(theIdentification.getAccession());
-                        proteinIdentified.setSynonyms(synonyms.get(accession));
-                        res.put(proteinIdentified.getAccession(),proteinIdentified);
-
-                        if (theIdentification.getAccession().startsWith("gi")) { // TODO - remove
-                            if (proteinIdentified.getSynonyms() != null) {
-                                logger.debug("Found " + proteinIdentified.getSynonyms().size() +
-                                    " synonyms for accession " + accession);
-                            } else {
-                                logger.error("CAUTION: there are no synonym list for protein with accession " + accession);
-                            }
-                        }
-                    } else {
-                        logger.error("Trying to add synonyms to a not found protein with accession: " + accession);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return res;
     }
+
+    public static Map<String, String> findProteinEnsemblMappingsForAccession(Set<String> accessions) throws IOException {
+
+        Map<String, String> res = new HashMap<String, String>();
+
+        // in order to get ensembl mappings, first we need to get uniprot accessions
+        Map<String, String> toUniprotMappings = findProteinUniprotMappingsForAccession(accessions);
+
+        // now we get ensmbl accessions for those mappings and associate them to the original ones provided in the method call
+        if ( toUniprotMappings!=null && toUniprotMappings.size()>0 ) {
+            TreeSet<String> uniprotMappingsSet = new TreeSet<String>();
+            uniprotMappingsSet.addAll(toUniprotMappings.values());
+            // get a map from uniprot to ensembl
+            Map<String, TreeSet<String>> uniprotToEnsemblMappings = getMappings(UNIPROT_KB_ACC_TAG, ENSMBL_PROTEIN_TAG, uniprotMappingsSet);
+            // now we need to add the ensembl maps to the original maps
+            res = mergeTransitivelyFirst(toUniprotMappings, uniprotToEnsemblMappings);
+        }
+
+        return res;
+    }
+
+    public static Map<String, TreeSet<String>> findProteinOtherMappingsForAccession(Set<String> accessions) throws IOException {
+
+        Map<String, TreeSet<String>> res = new HashMap<String, TreeSet<String>>();
+
+        // in order to get other mappings, first we need to get uniprot accessions
+        Map<String, String> toUniprotMappings = findProteinUniprotMappingsForAccession(accessions);
+
+        // now we get other accessions for those mappings (but not ensembl) and associate them to the original ones provided in the method call
+        if ( toUniprotMappings!=null && toUniprotMappings.size()>0 ) {
+            TreeSet<String> uniprotMappingsSet = new TreeSet<String>();
+            uniprotMappingsSet.addAll(toUniprotMappings.values());
+            // get a maps from uniprot to other DBs (but not ensembl or uniprot itself)
+            Map<String, TreeSet<String>> fromUniprotToOthers = new HashMap<String, TreeSet<String>>();
+            addAll(fromUniprotToOthers, getMappings(UNIPROT_KB_ACC_ID_TAG, GI_NUMBER_TAG, uniprotMappingsSet));
+            addAll(fromUniprotToOthers, getMappings(UNIPROT_KB_ACC_ID_TAG, REF_SEQ_PROTEIN_TAG, uniprotMappingsSet));
+            addAll(fromUniprotToOthers, getMappings(UNIPROT_KB_ACC_ID_TAG, UNI_PARC_TAG, uniprotMappingsSet));
+            // merge them back to the original accessions
+            res = mergeTransitively(toUniprotMappings,fromUniprotToOthers);
+        }
+
+        return res;
+    }
+
+//    /**
+//     * Given a collection of protein accessions, returns a map of mappings for them, excluding uniprot or ensembl
+//     * @param accessions
+//     * @return a Map from the original protein accessions to their synonyms
+//     * @throws IOException
+//     */
+//    public static Map<String, TreeSet<String>> findProteinOtherMappingsForAccession(Set<String> accessions) throws IOException {
+//        Map<String, TreeSet<String>> res = new HashMap<String, TreeSet<String>>();
+//
+//        Map<String, TreeSet<String>> accessionsByDb = groupAccessionsByDb(accessions);
+//        Map<String, TreeSet<String>> uniprotToOriginals = new HashMap<String, TreeSet<String>>();
+//        Set<String> allUniprot = new TreeSet<String>();
+//
+//        // in order to get other mappings, first we need to get uniprot accessions - other mappings exclude uniprot and ensembl
+//        if ( accessionsByDb != null && accessionsByDb.size()>0 ) {
+//
+//            // get all the IPI mappings
+//            if (accessionsByDb.containsKey(IPI_TAG)) {
+//                Map<String, TreeSet<String>> ipiMappingsMap = new HashMap<String, TreeSet<String>>();
+//
+//                for ( String ipiAccession: accessionsByDb.get(IPI_TAG) ) {
+//                    TreeSet<String> ipiMappingsForAccession = ipiMappings.getMappingsForIpiAccession(ipiAccession);
+//                    if (ipiMappingsForAccession == null)
+//                        ipiMappingsForAccession = new TreeSet<String>();
+//                    ipiMappingsForAccession.add(ipiAccession); // the accession itself is considered its synonym in our domain
+//                    ipiMappingsMap.put(ipiAccession, ipiMappingsForAccession);
+//                }
+//                // update the inverted
+//                addAllInverted(uniprotToOriginals, ipiMappingsMap);
+//                // update the all uniprot
+//                addAllFlat(allUniprot, ipiMappingsMap);
+//            }
+//
+//            // now we are going to get mappings to Uniprot accessions for each of the originally submitted accessions, excluding IPI that
+//            // are taken from the mapping file
+//
+//            for (String db: accessionsByDb.keySet()) {
+//                Map<String, TreeSet<String>> mappings = getMappings(db, UNIPROT_KB_ACC_TAG, accessionsByDb.get(db));
+//                // update the inverted
+//                addAllInverted(uniprotToOriginals,mappings);
+//                // update the all uniprot
+//                addAllFlat(allUniprot,mappings);
+//                // update result
+//                addAll(res, mappings);
+//            }
+//
+//            // now we need to get synonyms for each of the other considered DBs
+//            // for that we will use the already obtained Uniprot accessions
+//            Map<String, TreeSet<String>> uniProtMappings = new HashMap<String, TreeSet<String>>();
+//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, ENSMBL_PROTEIN_TAG, allUniprot));
+//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, GI_NUMBER_TAG, allUniprot));
+//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, UNIPROT_KB_ACC_TAG, allUniprot));
+//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, UNIPROT_KB_ID_TAG, allUniprot));
+//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, REF_SEQ_PROTEIN_TAG, allUniprot));
+//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, UNI_PARC_TAG, allUniprot));
+//
+//            // now we need to merge them back to the original accessions, using the inverted map
+//            for (String uniprotAccession: uniProtMappings.keySet()) {
+//                for (String originalAccession: uniprotToOriginals.get(uniprotAccession)) {
+//                    res.get(originalAccession).addAll(uniProtMappings.get(uniprotAccession));
+//                }
+//            }
+//
+//            logger.debug("Got " + getTotalSynonymsCount(res) + " synonyms in total for " + accessions.size() + " accessions");
+//
+//        }
+//
+//
+//        return res;
+//    }
+
+//    /**
+//     * Given a protein identifications map, add the synonyms to the protein identifications in the map
+//     * @param proteinIdentificationsMap
+//     */
+//    public static Map<String, ProteinReferenceProvider> getAllSynonyms(Map<String, ? extends ProteinReferenceProvider> proteinIdentificationsMap) {
+//        return getAllSynonyms(proteinIdentificationsMap, proteinIdentificationsMap.keySet());
+//    }
+
+//    /**
+//     * Given a protein identifications map, and a list of accessions to consider, add the synonyms to the protein identifications
+//     * in the map. This is a convenience method that allows filtering out some elements on the map.
+//     * @param proteinIdentificationsMap
+//     * @param accessionSynonymsToFind
+//     */
+//    public static Map<String, ProteinReferenceProvider> getAllSynonyms(Map<String, ? extends ProteinReferenceProvider> proteinIdentificationsMap, Set<String> accessionSynonymsToFind) {
+//        Map<String, ProteinReferenceProvider> res = new HashMap<String, ProteinReferenceProvider>();
+//
+//        try {
+//            Map<String, TreeSet<String>> synonyms = ProteinAccessionSynonymsFinder.findProteinSynonymsForAccession(accessionSynonymsToFind);
+//
+//            if (synonyms != null) {
+//                for (String accession: synonyms.keySet()) {
+//                    logger.debug("Adding synonyms to protein " + accession);
+//                    ProteinReferenceProvider theIdentification = proteinIdentificationsMap.get(accession);
+//                    if ( theIdentification == null) {
+//                        String giAccession = "gi|" + accession;
+//                        logger.debug("Trying again for GI accession " + giAccession + " from trimmed accession " + accession);
+//                        theIdentification = proteinIdentificationsMap.get(giAccession);
+//                        if (theIdentification == null) {
+//                            giAccession = giAccession + "|";
+//                            logger.debug("Trying again for GI accession " + giAccession + " from trimmed accession " + accession);
+//                            theIdentification = proteinIdentificationsMap.get(giAccession);
+//                            if (theIdentification != null) {
+//                                logger.debug("Got identification " + theIdentification.getAccession());
+//                            } else logger.debug("Still cannot get identification for accession " + accession);
+//                        }
+//                    }
+//
+//                    if (theIdentification != null) {
+//                        ProteinIdentified proteinIdentified = new ProteinIdentified();
+//                        proteinIdentified.setAccession(theIdentification.getAccession());
+//                        proteinIdentified.setSynonyms(synonyms.get(accession));
+//                        res.put(proteinIdentified.getAccession(),proteinIdentified);
+//
+//                        if (theIdentification.getAccession().startsWith("gi")) { // TODO - remove
+//                            if (proteinIdentified.getSynonyms() != null) {
+//                                logger.debug("Found " + proteinIdentified.getSynonyms().size() +
+//                                    " synonyms for accession " + accession);
+//                            } else {
+//                                logger.error("CAUTION: there are no synonym list for protein with accession " + accession);
+//                            }
+//                        }
+//                    } else {
+//                        logger.error("Trying to add synonyms to a not found protein with accession: " + accession);
+//                    }
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return res;
+//    }
 
     /**
      * Finds the DB for a given protein accession. Currently considered DBs include GI, ENSMBL, UNIPROT, UNIPARC, and IPI
@@ -398,6 +485,67 @@ public class ProteinAccessionSynonymsFinder {
     }
 
     /**
+     * This method assumes that mappings can be null and ignore collisions (keeps oldest)
+     * @param targetMap
+     * @param sourceMap
+     */
+    private static void addAllFirst(Map<String, String> targetMap, Map<String, TreeSet<String>> sourceMap) {
+        if (sourceMap != null) {
+            for (String accession: sourceMap.keySet()) {
+                if ( !NULL_ACCESSION_TAG.equals(accession) ) {
+                    if (!targetMap.containsKey(accession)) {
+                        targetMap.put(accession, sourceMap.get(accession).first());
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * This method assumes that mappings can be null and ignore collisions (keeps oldest)
+     * @param fromMap
+     * @param toMap
+     * @return
+     */
+    private static Map<String, String> mergeTransitivelyFirst(Map<String, String> fromMap, Map<String, TreeSet<String>> toMap) {
+        Map<String, String> res = null;
+        if (fromMap != null) {
+            res = new HashMap<String, String>();
+            for (String fromAccession: fromMap.keySet()) {
+                String stepAccession = fromMap.get(fromAccession);
+                if ( !NULL_ACCESSION_TAG.equals(stepAccession) ) {
+                    if (toMap.containsKey(stepAccession)) {
+                        res.put(fromAccession, toMap.get(stepAccession).first());
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * This method assumes that mappings can be null and ignore collisions (keeps oldest)
+     * @param fromMap
+     * @param toMap
+     * @return
+     */
+    private static Map<String, TreeSet<String>> mergeTransitively(Map<String, String> fromMap, Map<String, TreeSet<String>> toMap) {
+        Map<String, TreeSet<String>> res = null;
+        if (fromMap != null) {
+            res = new HashMap<String, TreeSet<String>>();
+            for (String fromAccession: fromMap.keySet()) {
+                String stepAccession = fromMap.get(fromAccession);
+                if ( !NULL_ACCESSION_TAG.equals(stepAccession) ) {
+                    if (toMap.containsKey(stepAccession)) {
+                        res.put(fromAccession, toMap.get(stepAccession));
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
      * This method assumes that mappings can be null
      * @param targetMap
      * @param sourceMap
@@ -432,4 +580,5 @@ public class ProteinAccessionSynonymsFinder {
             flat.addAll(mapEntry.getValue());
         }
     }
+
 }

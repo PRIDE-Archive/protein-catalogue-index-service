@@ -2,6 +2,7 @@ package uk.ac.ebi.pride.proteinindex.search.search.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.solr.repository.Query;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.pride.proteinindex.search.model.ProteinIdentified;
 import uk.ac.ebi.pride.proteinindex.search.search.repository.SolrProteinIdentificationRepository;
@@ -45,49 +46,42 @@ public class ProteinIdentificationSearchService {
         return solrProteinIdentificationRepository.findByAccessionIn(fixedAccessions);
     }
 
-
-    // find by project accession methods
-    public List<ProteinIdentified> findByProjectAccessions(String projectAccession) {
-        return solrProteinIdentificationRepository.findByProjectAccessions(projectAccession);
+    // find by mapping methods
+    public List<ProteinIdentified> findByUniprotMapping(String uniprotMapping) {
+        return this.solrProteinIdentificationRepository.findByUniprotMapping(uniprotMapping);
     }
-    public Page<ProteinIdentified> findByProjectAccessions(String projectAccession, Pageable pageable) {
-        return solrProteinIdentificationRepository.findByProjectAccessions(projectAccession, pageable);
+    public List<ProteinIdentified> findByUniprotMappingIn(Collection<String> uniprotMappings) {
+        return this.solrProteinIdentificationRepository.findByUniprotMappingIn(uniprotMappings);
     }
-    public List<ProteinIdentified> findByAccessionAndProjectAccessions(String accession, String projectAccession) {
-        return solrProteinIdentificationRepository.findByAccessionAndProjectAccessions(accession.replaceAll("[:\\]\\[]", "_"), projectAccession);
+    public List<ProteinIdentified> findByEnsemblMapping(String ensemblMapping) {
+        return this.solrProteinIdentificationRepository.findByEnsemblMapping(ensemblMapping);
     }
-    public List<ProteinIdentified> findByProjectAccessions(Collection<String> projectAccessions) {
-        return solrProteinIdentificationRepository.findByProjectAccessionsIn(projectAccessions);
+    public List<ProteinIdentified> findByEnsemblMappingIn(Collection<String> ensemblMappings) {
+        return this.solrProteinIdentificationRepository.findByEnsemblMappingIn(ensemblMappings);
     }
-
-
-    // find by assay accession methods
-    public List<ProteinIdentified> findByAssayAccessions(String assayAccession) {
-        return solrProteinIdentificationRepository.findByAssayAccessions(assayAccession);
+    public List<ProteinIdentified> findByUniprotMappingOrEnsemblMapping(String mapping) {
+        return this.solrProteinIdentificationRepository.findByUniprotMappingOrEnsemblMapping(mapping);
     }
-    public Page<ProteinIdentified> findByAssayAccessions(String assayAccession, Pageable pageable) {
-        return solrProteinIdentificationRepository.findByAssayAccessions(assayAccession, pageable);
+    public List<ProteinIdentified> findByUniprotMappingOrEnsemblMappingIn(Collection<String> mappings) {
+        return this.solrProteinIdentificationRepository.findByUniprotMappingOrEnsemblMappingIn(mappings);
     }
-    public List<ProteinIdentified> findByAccessionAndAssayAccessions(String accession, String assayAccession) {
-        return solrProteinIdentificationRepository.findByAccessionAndAssayAccessions(accession.replaceAll("[:\\]\\[]", "_"), assayAccession);
+    public List<ProteinIdentified> findByOtherMapping(String otherMapping) {
+        return this.solrProteinIdentificationRepository.findByOtherMapping(otherMapping);
     }
-    public List<ProteinIdentified> findByAssayAccessions(Collection<String> assayAccessions) {
-        return solrProteinIdentificationRepository.findByAssayAccessionsIn(assayAccessions);
+    public List<ProteinIdentified> findByOtherMappingIn(Collection<String> otherMappings) {
+        return this.solrProteinIdentificationRepository.findByOtherMappingIn(otherMappings);
     }
 
-
-    // find by assay synonym methods
-    public List<ProteinIdentified> findBySynonyms(String synonym) {
-        return solrProteinIdentificationRepository.findBySynonyms(synonym);
+    // Sequence query methods
+    public List<ProteinIdentified> findBySequence(String sequence) {
+        return this.solrProteinIdentificationRepository.findBySequence(sequence);
     }
-    public List<ProteinIdentified> findBySynonyms(Collection<String> synonyms) {
-        return solrProteinIdentificationRepository.findBySynonymsIn(synonyms);
-    }
-    public List<ProteinIdentified> findBySynonymsAndProjectAccessions(String synonym, String projectAccession) {
-        return solrProteinIdentificationRepository.findBySynonymsAndProjectAccessions(synonym, projectAccession);
+    public List<ProteinIdentified> findBySequenceIn(Collection<String> sequences) {
+        return this.solrProteinIdentificationRepository.findBySequenceIn(sequences);
     }
 
 
+    // find all
     public List<ProteinIdentified> findAll() {
         List<ProteinIdentified> res = new LinkedList<ProteinIdentified>();
         Iterator<ProteinIdentified> it = solrProteinIdentificationRepository.findAll().iterator();
@@ -99,7 +93,6 @@ public class ProteinIdentificationSearchService {
 
         return res;
     }
-
     public Page<ProteinIdentified> findAll(Pageable pageable) {
         return solrProteinIdentificationRepository.findAll(pageable);
     }
