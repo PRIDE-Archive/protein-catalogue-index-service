@@ -9,9 +9,9 @@
     </parent>
 
     <groupId>uk.ac.ebi.pride</groupId>
-    <artifactId>protein-index-search</artifactId>
+    <artifactId>protein-catalog-index-search</artifactId>
     <version>0.2.1-SNAPSHOT</version>
-	<name>protein-index-search</name>
+	<name>protein-catalog-index-search</name>
     <url>http://www.ebi.ac.uk/pride</url>
 
     <!--
@@ -53,12 +53,6 @@
 		<name>EMBL - European Bioinformatics Institute</name>
 		<url>http://www.ebi.ac.uk</url>
 	</organization>
-
-    <scm>
-        <connection>scm:svn:https://svn.ebi.ac.uk/pride-repo/protein-index/protein-index-search/trunk</connection>
-        <developerConnection>scm:svn:https://svn.ebi.ac.uk/pride-repo/protein-index/protein-index-search/trunk</developerConnection>
-        <url>https://svn.ebi.ac.uk/pride-repo/protein-index/protein-index-search/trunk</url>
-    </scm>
 
     <properties>
         <archive.repo.version>0.1.17-SNAPSHOT</archive.repo.version>
@@ -157,7 +151,7 @@
                     </excludes>
                     <archive>
                         <manifest>
-                            <mainClass>uk.ac.ebi.pride.proteinindex.search.tools.ProteinIndexBuilder</mainClass>
+                            <mainClass>uk.ac.ebi.pride.proteincatalogindex.search.tools.ProteinIndexBuilder</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
                             <useUniqueVersions>false</useUniqueVersions>
@@ -177,6 +171,20 @@
                 </configuration>
             </plugin>
 
+            <!-- source plugin-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven.source.plugin}</version>
+                <executions>
+                    <execution>
+                        <id>attach-source</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
     </build>
 
@@ -361,5 +369,10 @@
         </profile>
     </profiles>
 
+    <scm>
+        <connection>scm:svn:https://svn.ebi.ac.uk/pride-repo/protein-catalog-index/protein-catalog-index-search/trunk</connection>
+        <developerConnection>scm:svn:https://svn.ebi.ac.uk/protein-catalog-index/protein-catalog-index-search/trunk</developerConnection>
+        <url>https://svn.ebi.ac.uk/pride-repo/protein-catalog-index/protein-catalog-index-search/trunk</url>
+    </scm>
 
 </project>
