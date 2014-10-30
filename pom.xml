@@ -373,7 +373,7 @@
 
     <scm>
         <connection>scm:svn:https://svn.ebi.ac.uk/pride-repo/protein-catalog-index/protein-catalog-index-search/trunk</connection>
-        <developerConnection>scm:svn:https://svn.ebi.ac.uk/protein-catalog-index/protein-catalog-index-search/trunk</developerConnection>
+        <developerConnection>scm:svn:https://svn.ebi.ac.uk/pride-repo/protein-catalog-index/protein-catalog-index-search/trunk</developerConnection>
         <url>https://svn.ebi.ac.uk/pride-repo/protein-catalog-index/protein-catalog-index-search/trunk</url>
     </scm>
 
