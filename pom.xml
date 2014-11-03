@@ -57,7 +57,7 @@
     <properties>
         <archive.repo.version>0.1.19</archive.repo.version>
         <archive.data.provider.api.version>2.0.6</archive.data.provider.api.version>
-        <jmztab.version>3.0.1</jmztab.version>
+        <jmztab.version>3.0.2-SNAPSHOT</jmztab.version>
         <protein.details.fetcher.version>1.0.3</protein.details.fetcher.version>
         <accession.resolver.version>1.0.1</accession.resolver.version>
     </properties>
@@ -215,6 +215,7 @@
                     <artifactId>slf4j-jdk14</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>test</scope>
         </dependency>
 
 
