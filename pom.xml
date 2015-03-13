@@ -22,7 +22,7 @@
 
         db-pride-repo-pridepro (DB config to retrieve data to index)
         db-pride-repo-pridearch-ro-user (DB user details)
-        pride-archive-solr-cores (config for the solr cores)
+        pride-archive-solr-cores-prod (config for the solr cores)
         pride3-submission-pipeline (??)
 -->
 
@@ -57,7 +57,7 @@
     <properties>
         <archive.repo.version>0.1.19</archive.repo.version>
         <archive.data.provider.api.version>2.0.6</archive.data.provider.api.version>
-        <jmztab.version>3.0.2-SNAPSHOT</jmztab.version>
+        <jmztab.version>3.0.2</jmztab.version>
         <protein.details.fetcher.version>1.0.3</protein.details.fetcher.version>
         <accession.resolver.version>1.0.1</accession.resolver.version>
     </properties>
@@ -269,12 +269,6 @@
             <artifactId>jmztab-modular-model</artifactId>
             <!-- based on mzTab specification version 1.0 RC5-->
             <version>${jmztab.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -282,12 +276,6 @@
             <artifactId>jmztab-modular-util</artifactId>
             <!-- based on mzTab specification version 1.0 RC5-->
             <version>${jmztab.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -307,10 +295,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>
