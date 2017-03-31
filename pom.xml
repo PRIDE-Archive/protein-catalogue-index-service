@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent> <!-- parent POM -->
-        <groupId>uk.ac.ebi.pride.maven</groupId>
-        <artifactId>pride-base-master</artifactId>
-        <version>1.0.3</version>
+    <parent>
+        <groupId>uk.ac.ebi.pride.architectural</groupId>
+        <artifactId>pride-core</artifactId>
+        <version>1.0.1</version>
     </parent>
 
     <groupId>uk.ac.ebi.pride</groupId>
@@ -26,38 +26,10 @@
         pride3-submission-pipeline (??)
 -->
 
-    <licenses>
-        <license>
-            <name>The Apache Software License 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <name>PRIDE Developer</name>
-            <id>pride-support@ebi.ac.uk</id>
-            <email>pride-support@ebi.ac.uk</email>
-            <organization>Proteomics Services Team, EMBL - European Bioinformatics Institute</organization>
-        </developer>
-        <developer>
-            <name>Jose A. Dianes</name>
-            <id>jdianes@ebi.ac.uk</id>
-            <email>jdianes@ebi.ac.uk</email>
-            <organization>Proteomics Services Team, EMBL - European Bioinformatics Institute</organization>
-        </developer>
-    </developers>
-
-	<organization>
-		<name>EMBL - European Bioinformatics Institute</name>
-		<url>http://www.ebi.ac.uk</url>
-	</organization>
-
     <properties>
         <archive.repo.version>0.1.19</archive.repo.version>
-        <archive.data.provider.api.version>2.0.6</archive.data.provider.api.version>
-        <jmztab.version>3.0.2</jmztab.version>
+        <archive.data.provider.api.version>2.0.9</archive.data.provider.api.version>
+        <jmztab.version>3.0.5</jmztab.version>
         <protein.details.fetcher.version>1.0.3</protein.details.fetcher.version>
         <accession.resolver.version>1.0.1</accession.resolver.version>
     </properties>
@@ -161,32 +133,6 @@
                     </archive>
                 </configuration>
             </plugin>
-
-            <!--compiler plugin-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin}</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-
-            <!-- source plugin-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>${maven.source.plugin}</version>
-                <executions>
-                    <execution>
-                        <id>attach-source</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 		</plugins>
     </build>
 
@@ -197,18 +143,19 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-solr</artifactId>
+            <version>1.2.1.RELEASE</version>
         </dependency>
 
         <!--SolrJ-->
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
-            <version>${solrj.version}</version>
+            <version>4.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-test-framework</artifactId>
-            <version>${solrj.version}</version>
+            <version>4.2.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -257,13 +204,6 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>spring-web</artifactId>-->
-        <!--</dependency>-->
-
-
-
         <dependency>
             <groupId>uk.ac.ebi.pride</groupId>
             <artifactId>jmztab-modular-model</artifactId>
@@ -281,57 +221,36 @@
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>oracle-thin</artifactId>
+            <version>11.2.0.1.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>1.6.4</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.6.4</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
+            <version>1.0.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <version>1.0.7</version>
             <scope>runtime</scope>
         </dependency>
 
     </dependencies>
 
-
-    <repositories>
-        <repository> <!-- EBI repo -->
-            <id>nexus-ebi-repo</id>
-            <name>The EBI internal repository</name>
-            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/</url>
-            <releases>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository> <!-- EBI SNAPSHOT repo -->
-            <id>nexus-ebi-snapshot-repo</id>
-            <name>The EBI internal snapshot repository</name>
-            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-maven-snapshot</id>
-            <url>http://repo.springsource.org/libs-snapshot</url>
-        </repository>
-    </repositories>
 
     <profiles>
         <!-- select this profile to build the indexer into its ZIP file -->
@@ -368,5 +287,4 @@
         <url>scm:git:https://github.com/PRIDE-Archive/protein-catalogue-index-service.git</url>
         <tag>HEAD</tag>
     </scm>
-
 </project>
