@@ -20,7 +20,6 @@ import java.util.*;
  *
  */
 public class ProteinAccessionMappingsFinder {
-    private static final String GI_PREFIX = "gi";
     private static Logger logger = LoggerFactory.getLogger(ProteinAccessionMappingsFinder.class.getName());
 
     private static final int MAX_SYNONYMS_REQUEST = 100;
@@ -38,14 +37,8 @@ public class ProteinAccessionMappingsFinder {
     public static final String UNIPROT_KB_ID_TAG = "ID";
     public static final String UNIPROT_KB_ACC_TAG = "ACC";
     public static final String UNIPROT_KB_ACC_ID_TAG = "ACC+ID";
-    public static final String GI_NUMBER_TAG = "P_GI";
     public static final String REF_SEQ_PROTEIN_TAG = "P_REFSEQ_AC";
     public static final String UNI_PARC_TAG = "UPARC";
-    public static final String IPI_TAG = "IPI";
-
-    private static final String IPI_FILE_PATH = "ipi/last-UniProtKB2IPI.map";
-
-    private static final IpiMapper ipiMappings = new IpiMapper(IPI_FILE_PATH);
 
 
     /**
@@ -62,26 +55,6 @@ public class ProteinAccessionMappingsFinder {
         Map<String, TreeSet<String>> accessionsByDb = groupAccessionsByDb(accessions);
 
         if ( accessionsByDb != null && accessionsByDb.size()>0 ) {
-
-            // get mappings for IPI accessions from provided file
-            if (accessionsByDb.containsKey(IPI_TAG)) {
-                Map<String, TreeSet<String>> ipiMappingsMap = new HashMap<String, TreeSet<String>>();
-
-                long totalIpiMappings = 0;
-
-                for (String ipiAccession : accessionsByDb.get(IPI_TAG)) {
-                    TreeSet<String> ipiMappingsForAccession = ipiMappings.getMappingsForIpiAccession(ipiAccession);
-
-                    if ( ipiMappingsForAccession != null && ipiAccession.length()>0 ) {
-                        ipiMappingsMap.put(ipiAccession, ipiMappingsForAccession); // here we are assuming unique uniprot mappings for each IPI accession
-                        totalIpiMappings = totalIpiMappings + ipiMappingsForAccession.size(); // this is for logging purposes only
-                    }
-                }
-                addAllFirst(res, ipiMappingsMap);
-                logger.debug("Found a total of " + totalIpiMappings + " UniProt accession mappings for " + accessionsByDb.get(IPI_TAG).size() + " IPI accessions");
-                accessionsByDb.remove(IPI_TAG);
-            }
-
             // now we are going to get mappings to Uniprot accessions for each of the originally submitted accessions, excluding IPI that
             // are taken from the mapping file
             for (String db : accessionsByDb.keySet()) {
@@ -127,7 +100,6 @@ public class ProteinAccessionMappingsFinder {
             uniprotMappingsSet.addAll(toUniprotMappings.values());
             // get a maps from uniprot to other DBs (but not ensembl or uniprot itself)
             Map<String, TreeSet<String>> fromUniprotToOthers = new HashMap<String, TreeSet<String>>();
-            addAll(fromUniprotToOthers, getMappings(UNIPROT_KB_ACC_ID_TAG, GI_NUMBER_TAG, uniprotMappingsSet));
             addAll(fromUniprotToOthers, getMappings(UNIPROT_KB_ACC_ID_TAG, REF_SEQ_PROTEIN_TAG, uniprotMappingsSet));
             addAll(fromUniprotToOthers, getMappings(UNIPROT_KB_ACC_ID_TAG, UNI_PARC_TAG, uniprotMappingsSet));
             // merge them back to the original accessions
@@ -137,155 +109,14 @@ public class ProteinAccessionMappingsFinder {
         return res;
     }
 
-//    /**
-//     * Given a collection of protein accessions, returns a map of mappings for them, excluding uniprot or ensembl
-//     * @param accessions
-//     * @return a Map from the original protein accessions to their mappings
-//     * @throws IOException
-//     */
-//    public static Map<String, TreeSet<String>> findProteinOtherMappingsForAccession(Set<String> accessions) throws IOException {
-//        Map<String, TreeSet<String>> res = new HashMap<String, TreeSet<String>>();
-//
-//        Map<String, TreeSet<String>> accessionsByDb = groupAccessionsByDb(accessions);
-//        Map<String, TreeSet<String>> uniprotToOriginals = new HashMap<String, TreeSet<String>>();
-//        Set<String> allUniprot = new TreeSet<String>();
-//
-//        // in order to get other mappings, first we need to get uniprot accessions - other mappings exclude uniprot and ensembl
-//        if ( accessionsByDb != null && accessionsByDb.size()>0 ) {
-//
-//            // get all the IPI mappings
-//            if (accessionsByDb.containsKey(IPI_TAG)) {
-//                Map<String, TreeSet<String>> ipiMappingsMap = new HashMap<String, TreeSet<String>>();
-//
-//                for ( String ipiAccession: accessionsByDb.get(IPI_TAG) ) {
-//                    TreeSet<String> ipiMappingsForAccession = ipiMappings.getMappingsForIpiAccession(ipiAccession);
-//                    if (ipiMappingsForAccession == null)
-//                        ipiMappingsForAccession = new TreeSet<String>();
-//                    ipiMappingsForAccession.add(ipiAccession); // the accession itself is considered its synonym in our domain
-//                    ipiMappingsMap.put(ipiAccession, ipiMappingsForAccession);
-//                }
-//                // update the inverted
-//                addAllInverted(uniprotToOriginals, ipiMappingsMap);
-//                // update the all uniprot
-//                addAllFlat(allUniprot, ipiMappingsMap);
-//            }
-//
-//            // now we are going to get mappings to Uniprot accessions for each of the originally submitted accessions, excluding IPI that
-//            // are taken from the mapping file
-//
-//            for (String db: accessionsByDb.keySet()) {
-//                Map<String, TreeSet<String>> mappings = getMappings(db, UNIPROT_KB_ACC_TAG, accessionsByDb.get(db));
-//                // update the inverted
-//                addAllInverted(uniprotToOriginals,mappings);
-//                // update the all uniprot
-//                addAllFlat(allUniprot,mappings);
-//                // update result
-//                addAll(res, mappings);
-//            }
-//
-//            // now we need to get mappings for each of the other considered DBs
-//            // for that we will use the already obtained Uniprot accessions
-//            Map<String, TreeSet<String>> uniProtMappings = new HashMap<String, TreeSet<String>>();
-//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, ENSMBL_PROTEIN_TAG, allUniprot));
-//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, GI_NUMBER_TAG, allUniprot));
-//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, UNIPROT_KB_ACC_TAG, allUniprot));
-//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, UNIPROT_KB_ID_TAG, allUniprot));
-//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, REF_SEQ_PROTEIN_TAG, allUniprot));
-//            addAll(uniProtMappings, getMappings(UNIPROT_KB_ACC_ID_TAG, UNI_PARC_TAG, allUniprot));
-//
-//            // now we need to merge them back to the original accessions, using the inverted map
-//            for (String uniprotAccession: uniProtMappings.keySet()) {
-//                for (String originalAccession: uniprotToOriginals.get(uniprotAccession)) {
-//                    res.get(originalAccession).addAll(uniProtMappings.get(uniprotAccession));
-//                }
-//            }
-//
-//            logger.debug("Got " + getTotalSynonymsCount(res) + " mappings in total for " + accessions.size() + " accessions");
-//
-//        }
-//
-//
-//        return res;
-//    }
-
-//    /**
-//     * Given a protein identifications map, add the mappings to the protein identifications in the map
-//     * @param proteinIdentificationsMap
-//     */
-//    public static Map<String, ProteinReferenceProvider> getAllSynonyms(Map<String, ? extends ProteinReferenceProvider> proteinIdentificationsMap) {
-//        return getAllSynonyms(proteinIdentificationsMap, proteinIdentificationsMap.keySet());
-//    }
-
-//    /**
-//     * Given a protein identifications map, and a list of accessions to consider, add the mappings to the protein identifications
-//     * in the map. This is a convenience method that allows filtering out some elements on the map.
-//     * @param proteinIdentificationsMap
-//     * @param accessionSynonymsToFind
-//     */
-//    public static Map<String, ProteinReferenceProvider> getAllSynonyms(Map<String, ? extends ProteinReferenceProvider> proteinIdentificationsMap, Set<String> accessionSynonymsToFind) {
-//        Map<String, ProteinReferenceProvider> res = new HashMap<String, ProteinReferenceProvider>();
-//
-//        try {
-//            Map<String, TreeSet<String>> mappings = ProteinAccessionSynonymsFinder.findProteinSynonymsForAccession(accessionSynonymsToFind);
-//
-//            if (mappings != null) {
-//                for (String accession: mappings.keySet()) {
-//                    logger.debug("Adding mappings to protein " + accession);
-//                    ProteinReferenceProvider theIdentification = proteinIdentificationsMap.get(accession);
-//                    if ( theIdentification == null) {
-//                        String giAccession = "gi|" + accession;
-//                        logger.debug("Trying again for GI accession " + giAccession + " from trimmed accession " + accession);
-//                        theIdentification = proteinIdentificationsMap.get(giAccession);
-//                        if (theIdentification == null) {
-//                            giAccession = giAccession + "|";
-//                            logger.debug("Trying again for GI accession " + giAccession + " from trimmed accession " + accession);
-//                            theIdentification = proteinIdentificationsMap.get(giAccession);
-//                            if (theIdentification != null) {
-//                                logger.debug("Got identification " + theIdentification.getAccession());
-//                            } else logger.debug("Still cannot get identification for accession " + accession);
-//                        }
-//                    }
-//
-//                    if (theIdentification != null) {
-//                        ProteinIdentified proteinIdentified = new ProteinIdentified();
-//                        proteinIdentified.setAccession(theIdentification.getAccession());
-//                        proteinIdentified.setSynonyms(mappings.get(accession));
-//                        res.put(proteinIdentified.getAccession(),proteinIdentified);
-//
-//                        if (theIdentification.getAccession().startsWith("gi")) { // TODO - remove
-//                            if (proteinIdentified.getSynonyms() != null) {
-//                                logger.debug("Found " + proteinIdentified.getSynonyms().size() +
-//                                    " mappings for accession " + accession);
-//                            } else {
-//                                logger.error("CAUTION: there are no synonym list for protein with accession " + accession);
-//                            }
-//                        }
-//                    } else {
-//                        logger.error("Trying to add mappings to a not found protein with accession: " + accession);
-//                    }
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return res;
-//    }
-
     /**
-     * Finds the DB for a given protein accession. Currently considered DBs include GI, ENSMBL, UNIPROT, UNIPARC, and IPI
+     * Finds the DB for a given protein accession. Currently considered DBs include GI, ENSMBL, UNIPROT, and UNIPARC
      * @param accession
      * @return
      */
     public static String findDb(String accession) {
         String from = null;
-        // trim gi accessions
-        if (accession.startsWith(GI_PREFIX)) {
-            String giAccession = trimGiAccession(accession);
-            from = GI_NUMBER_TAG;
-        } else if ( ProteinAccessionPattern.isGIAccession(accession) ) {
-            from = GI_NUMBER_TAG;
-        } else if ( ProteinAccessionPattern.isEnsemblAccession(accession) ) {
+        if ( ProteinAccessionPattern.isEnsemblAccession(accession) ) {
             from = ENSMBL_PROTEIN_TAG;
         } else if ( ProteinAccessionPattern.isRefseqAccession(accession) ) {
             from = REF_SEQ_PROTEIN_TAG;
@@ -295,10 +126,7 @@ public class ProteinAccessionMappingsFinder {
             from = UNIPROT_KB_ID_TAG;
         } else if ( ProteinAccessionPattern.isUniparcAccession(accession) ) {
             from = UNI_PARC_TAG;
-        } else if ( ProteinAccessionPattern.isIPIAccession(accession) ) {
-            from = IPI_TAG;
         }
-
         return from;
     }
 
