@@ -27,10 +27,11 @@
 -->
 
     <properties>
-        <archive.repo.version>0.1.19</archive.repo.version>
+        <java.version>1.7</java.version>
+        <archive.repo.version>1.0.0</archive.repo.version>
         <archive.data.provider.api.version>2.0.9</archive.data.provider.api.version>
         <jmztab.version>3.0.5</jmztab.version>
-        <protein.details.fetcher.version>1.0.3</protein.details.fetcher.version>
+        <protein.details.fetcher.version>1.0.10</protein.details.fetcher.version>
         <accession.resolver.version>1.0.1</accession.resolver.version>
     </properties>
 
