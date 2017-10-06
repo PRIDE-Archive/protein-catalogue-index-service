@@ -45,7 +45,7 @@ public class ProjectProteinCatalogIndexerTest extends SolrTestCaseJ4 {
     private static final String TEST_PROJECT_ACCESSION = "PXD000433";
     private static final String TEST_ASSAY_ACCESSION = "test-assay-accession";
     private static final String TEST_PROTEIN_ACCESSION = "D0NNB3";
-    private static final String TEST_PROTEIN_NAME_FIELD = "NAME####Putative uncharacterized protein";
+    private static final String TEST_PROTEIN_NAME_FIELD = "NAME####Uncharacterized protein";
     private static final String TEST_PROTEIN_SEQ_STARTS_WITH = "MSSEEVVVAVEEQEIPDVIERL";
     private SolrServer server;
     private SolrProteinCatalogRepositoryFactory solrProteinCatalogRepositoryFactory;
