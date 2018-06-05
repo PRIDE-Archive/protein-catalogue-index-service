@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.ac.ebi.pride</groupId>
     <artifactId>protein-catalog-index-search</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3</version>
     <name>protein-catalog-index-search</name>
     <url>http://www.ebi.ac.uk/pride</url>
 
@@ -288,6 +287,6 @@
         <developerConnection>scm:git:https://github.com/PRIDE-Archive/protein-catalogue-index-service.git
         </developerConnection>
         <url>scm:git:https://github.com/PRIDE-Archive/protein-catalogue-index-service.git</url>
-        <tag>HEAD</tag>
+        <tag>protein-catalog-index-search-1.0.3</tag>
     </scm>
 </project>
