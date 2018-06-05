@@ -4,7 +4,7 @@
 
     <groupId>uk.ac.ebi.pride</groupId>
     <artifactId>protein-catalog-index-search</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4-SNAPSHOT</version>
     <name>protein-catalog-index-search</name>
     <url>http://www.ebi.ac.uk/pride</url>
 
@@ -287,6 +287,6 @@
         <developerConnection>scm:git:https://github.com/PRIDE-Archive/protein-catalogue-index-service.git
         </developerConnection>
         <url>scm:git:https://github.com/PRIDE-Archive/protein-catalogue-index-service.git</url>
-        <tag>protein-catalog-index-search-1.0.3</tag>
+        <tag>HEAD</tag>
     </scm>
 </project>
